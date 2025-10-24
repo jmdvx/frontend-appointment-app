@@ -1,59 +1,206 @@
-# AppointmentApp
+# Katie's Nail Post - Appointment Booking Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.18.
+A modern, responsive Angular application for booking nail appointments with comprehensive validation and error handling.
 
-## Development server
+## 🌟 Features
 
-To start a local development server, run:
+### ✨ Core Functionality
+- **User Authentication**: Login, registration, password reset
+- **Service Selection**: Choose from various nail services
+- **Appointment Booking**: Book appointments with date/time selection
+- **Calendar Management**: View and manage appointments
+- **Admin Dashboard**: Complete admin panel for managing appointments and clients
+- **Client Management**: Manage client information and preferences
 
-```bash
-ng serve
+### 🛡️ Advanced Validation
+- **Form Validation**: Comprehensive client-side validation
+- **Error Handling**: Robust error handling for all scenarios
+- **Network Error Recovery**: Graceful handling of network issues
+- **Date/Time Validation**: Prevents booking conflicts and invalid dates
+- **Real-time Feedback**: Instant validation feedback with visual indicators
+
+### 📱 Responsive Design
+- **Mobile-First**: Optimized for mobile devices
+- **Tablet Support**: Responsive design for tablets
+- **Desktop Experience**: Full-featured desktop interface
+- **Cross-Browser**: Compatible with all modern browsers
+
+### 🎨 Modern UI/UX
+- **Pink Theme**: Consistent brand colors throughout
+- **Gradient Backgrounds**: Beautiful gradient designs
+- **Loading States**: Smooth loading animations
+- **Error Messages**: Clear, helpful error messages with icons
+- **Success Feedback**: Positive confirmation messages
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm (v8 or higher)
+- Angular CLI (v17 or higher)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/frontend-appointment-app.git
+   cd frontend-appointment-app
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure backend URL**
+   Update the API endpoints in the service files to point to your backend:
+   - `src/app/auth.service.ts`
+   - `src/app/appointment.service.ts`
+   - `src/app/blocked-dates.service.ts`
+   - `src/app/client.service.ts`
+
+4. **Start development server**
+   ```bash
+   npm start
+   ```
+
+5. **Open your browser**
+   Navigate to `http://localhost:4200`
+
+## 🏗️ Project Structure
+
+```
+src/
+├── app/
+│   ├── account-details/          # User account management
+│   ├── book-appointment/        # Appointment booking with validation
+│   ├── calendar-view/           # Calendar management
+│   ├── client-management/       # Admin client management
+│   ├── home/                    # Landing page
+│   ├── login/                   # User authentication
+│   ├── navbar/                  # Navigation component
+│   ├── register/                # User registration
+│   ├── reset-password/          # Password reset
+│   ├── services/                # Service selection
+│   ├── user-appointments/       # User's appointments
+│   ├── view-appointments/       # Admin appointment view
+│   ├── auth.service.ts          # Authentication service
+│   ├── appointment.service.ts   # Appointment management
+│   ├── blocked-dates.service.ts # Blocked dates management
+│   └── client.service.ts        # Client management
+├── assets/                      # Static assets
+└── styles.css                   # Global styles
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🔧 Configuration
 
-## Code scaffolding
+### Backend Integration
+The frontend is configured to work with the backend API at:
+- **Development**: `http://localhost:3000`
+- **Production**: `https://backend-appointment-app-wqo0.onrender.com`
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+### Environment Variables
+Create a `src/environments/environment.ts` file:
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:3000/api/v1',
+  authUrl: 'http://localhost:3000/api/auth'
+};
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🎯 Key Components
 
+### Book Appointment Component
+- **Comprehensive Validation**: Form validation with real-time feedback
+- **Error Handling**: Network errors, validation errors, business logic errors
+- **Date/Time Selection**: Prevents conflicts and invalid selections
+- **Service Integration**: Seamless service selection and booking
+
+### Admin Dashboard
+- **Appointment Management**: View, edit, delete appointments
+- **Client Management**: Manage client information and preferences
+- **Calendar View**: Visual calendar with appointment management
+- **Blocked Dates**: Manage unavailable dates
+
+### Authentication System
+- **Secure Login**: Email/password authentication
+- **Registration**: User registration with validation
+- **Password Reset**: Secure password reset functionality
+- **Session Management**: Automatic session handling
+
+## 🛠️ Development
+
+### Available Scripts
+- `npm start` - Start development server
+- `npm run build` - Build for production
+- `npm run test` - Run unit tests
+- `npm run lint` - Run linting
+
+### Code Quality
+- **TypeScript**: Full TypeScript implementation
+- **Angular Best Practices**: Following Angular style guide
+- **Responsive Design**: Mobile-first approach
+- **Accessibility**: WCAG compliant components
+
+## 🚀 Deployment
+
+### Build for Production
 ```bash
-ng generate --help
+npm run build
 ```
 
-## Building
+### Deploy to Static Hosting
+The built files in `dist/appointment-app/browser/` can be deployed to:
+- **Netlify**: Drag and drop deployment
+- **Vercel**: Git-based deployment
+- **GitHub Pages**: Static site hosting
+- **AWS S3**: Static website hosting
 
-To build the project run:
+### Environment Configuration
+For production deployment, update the API URLs in your environment files.
 
-```bash
-ng build
-```
+## 🔒 Security Features
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+- **Input Validation**: Client-side validation for all forms
+- **XSS Protection**: Angular's built-in XSS protection
+- **CSRF Protection**: CSRF tokens for API requests
+- **Secure Authentication**: JWT-based authentication
+- **Error Handling**: No sensitive information in error messages
 
-## Running unit tests
+## 📱 Browser Support
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- **Chrome**: 90+
+- **Firefox**: 88+
+- **Safari**: 14+
+- **Edge**: 90+
 
-```bash
-ng test
-```
+## 🤝 Contributing
 
-## Running end-to-end tests
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-For end-to-end (e2e) testing, run:
+## 📄 License
 
-```bash
-ng e2e
-```
+This project is licensed under the MIT License.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🆘 Support
 
-## Additional Resources
+For support and questions:
+- **Email**: support@katiesnailpost.com
+- **Issues**: GitHub Issues
+- **Documentation**: This README
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 🎉 Acknowledgments
+
+- **Angular Team**: For the amazing framework
+- **Bootstrap**: For responsive design utilities
+- **Font Awesome**: For beautiful icons
+- **Community**: For inspiration and support
+
+---
+
+**Built with ❤️ for Katie's Nail Post**
