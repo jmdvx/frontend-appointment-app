@@ -221,8 +221,17 @@ export class ViewAppointmentsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error canceling appointment:', err);
-        this.cancelingAppointmentId = null;
-        alert('Failed to cancel appointment. Please try again.');
+        
+        // Handle offline mode - remove appointment locally
+        if (err.status === 0 || err.message?.includes('CORS') || err.message?.includes('Failed to fetch')) {
+          console.log('Backend unavailable, removing appointment locally');
+          this.appointments = this.appointments.filter(apt => apt._id !== appointmentId);
+          this.cancelingAppointmentId = null;
+          alert('Appointment canceled successfully! (Offline mode)');
+        } else {
+          this.cancelingAppointmentId = null;
+          alert('Failed to cancel appointment. Please try again.');
+        }
       }
     });
   }

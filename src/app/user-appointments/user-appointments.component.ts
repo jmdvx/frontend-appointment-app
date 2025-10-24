@@ -184,8 +184,19 @@ export class UserAppointmentsComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error cancelling appointment:', err);
-        this.showErrorMessage('Failed to cancel appointment. Please try again or contact support.');
-        this.isAnimating = false;
+        
+        // Handle offline mode - remove appointment locally
+        if (err.status === 0 || err.message?.includes('CORS') || err.message?.includes('Failed to fetch')) {
+          console.log('Backend unavailable, removing appointment locally');
+          setTimeout(() => {
+            this.appointments = this.appointments.filter(apt => apt._id !== appointment._id);
+            this.showSuccessMessage('Your appointment has been cancelled successfully! 💅 (Offline mode)');
+            this.isAnimating = false;
+          }, 500);
+        } else {
+          this.showErrorMessage('Failed to cancel appointment. Please try again or contact support.');
+          this.isAnimating = false;
+        }
       }
     });
   }

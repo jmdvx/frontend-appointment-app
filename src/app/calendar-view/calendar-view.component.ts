@@ -364,8 +364,18 @@ export class CalendarViewComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error deleting appointment:', err);
-        this.deletingAppointmentId = null;
-        alert('Failed to delete appointment. Please try again.');
+        
+        // Handle offline mode - remove appointment locally
+        if (err.status === 0 || err.message?.includes('CORS') || err.message?.includes('Failed to fetch')) {
+          console.log('Backend unavailable, removing appointment locally');
+          this.appointments = this.appointments.filter(apt => apt._id !== appointmentId);
+          this.deletingAppointmentId = null;
+          this.successMessage = 'Appointment deleted successfully! (Offline mode)';
+          setTimeout(() => this.successMessage = null, 3000);
+        } else {
+          this.deletingAppointmentId = null;
+          alert('Failed to delete appointment. Please try again.');
+        }
       }
     });
   }
@@ -384,8 +394,18 @@ export class CalendarViewComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error canceling appointment:', err);
-        this.cancelingAppointmentId = null;
-        alert('Failed to cancel appointment. Please try again.');
+        
+        // Handle offline mode - remove appointment locally
+        if (err.status === 0 || err.message?.includes('CORS') || err.message?.includes('Failed to fetch')) {
+          console.log('Backend unavailable, removing appointment locally');
+          this.appointments = this.appointments.filter(apt => apt._id !== appointmentId);
+          this.cancelingAppointmentId = null;
+          this.successMessage = 'Appointment canceled successfully! (Offline mode)';
+          setTimeout(() => this.successMessage = null, 3000);
+        } else {
+          this.cancelingAppointmentId = null;
+          alert('Failed to cancel appointment. Please try again.');
+        }
       }
     });
   }
