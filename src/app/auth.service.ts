@@ -92,18 +92,24 @@ export class AuthService {
     if (this.OFFLINE_MODE) {
       console.log('🔧 OFFLINE MODE: Simulating successful login');
       
-      // Determine user name based on email
+      // Determine user name and role based on email
       let userName = 'User';
+      let userRole: 'admin' | 'user' = 'user';
+      
       if (credentials.email.toLowerCase().includes('james')) {
         userName = 'James';
+        userRole = 'admin'; // James is admin
       } else if (credentials.email.toLowerCase().includes('katie')) {
         userName = 'Katie';
+        userRole = 'user'; // Katie is regular user
       } else if (credentials.email.toLowerCase().includes('admin')) {
         userName = 'Admin';
+        userRole = 'admin';
       } else {
         // Extract name from email (part before @)
         const emailPart = credentials.email.split('@')[0];
         userName = emailPart.charAt(0).toUpperCase() + emailPart.slice(1);
+        userRole = 'user';
       }
       
       // Simulate a successful login with realistic data
@@ -112,7 +118,7 @@ export class AuthService {
         email: credentials.email,
         name: userName,
         phone: '0833866364',
-        role: credentials.email.toLowerCase().includes('admin') ? 'admin' : 'user'
+        role: userRole
       };
       
       const mockResponse: LoginResponse = {
@@ -126,6 +132,9 @@ export class AuthService {
         localStorage.setItem('auth_token', mockResponse.token);
         localStorage.setItem('current_user', JSON.stringify(mockResponse.user));
       }
+      
+      console.log('🔧 OFFLINE MODE: User created:', mockResponse.user);
+      console.log('🔧 OFFLINE MODE: Admin status:', this.isAdmin());
       
       return of(mockResponse);
     }
