@@ -1,0 +1,99 @@
+<section class="login-container">
+  <div class="login-card">
+    <h1 class="login-title">Login</h1>
+    <p class="login-subtitle">Sign in to your account</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email"
+          formControlName="email" 
+          placeholder="Enter your email"
+          [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+        />
+        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-message">
+          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+          <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password"
+          formControlName="password" 
+          placeholder="Enter your password"
+          [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+        />
+        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
+          <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+          <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+        </div>
+        <div class="forgot-password-link">
+          <a (click)="showForgotPassword = true" class="forgot-link">Forgot your password?</a>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-banner">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="login-btn" [disabled]="loading">
+        <span *ngIf="!loading">Sign In</span>
+        <span *ngIf="loading">Signing In...</span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>Don't have an account? <a routerLink="/register" class="register-link">Sign up</a></p>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div *ngIf="showForgotPassword" class="modal-overlay" (click)="closeForgotPassword()">
+    <div class="modal-content forgot-password-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Reset Password</h3>
+        <button class="close-btn" (click)="closeForgotPassword()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="forgot-password-text">
+          Enter your email address and we'll send you a link to reset your password.
+        </p>
+        
+        <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()" class="forgot-password-form">
+          <div class="form-group">
+            <label for="forgot-email">Email Address</label>
+            <input 
+              type="email" 
+              id="forgot-email"
+              formControlName="email" 
+              placeholder="Enter your email address"
+              [class.error]="forgotPasswordForm.get('email')?.invalid && forgotPasswordForm.get('email')?.touched"
+            />
+            <div *ngIf="forgotPasswordForm.get('email')?.invalid && forgotPasswordForm.get('email')?.touched" class="error-message">
+              <span *ngIf="forgotPasswordForm.get('email')?.errors?.['required']">Email is required</span>
+              <span *ngIf="forgotPasswordForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+            </div>
+          </div>
+
+          <div *ngIf="forgotPasswordMessage" class="forgot-password-message" [class.success]="forgotPasswordSuccess" [class.error]="!forgotPasswordSuccess">
+            {{ forgotPasswordMessage }}
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" (click)="closeForgotPassword()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="forgotPasswordForm.invalid || forgotPasswordLoading">
+              <span *ngIf="!forgotPasswordLoading">Send Reset Link</span>
+              <span *ngIf="forgotPasswordLoading">Sending...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

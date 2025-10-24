@@ -1,0 +1,163 @@
+<section class="container">
+  <div class="header">
+    <div class="header-content">
+      <h1 class="heading">Nail Services</h1>
+      <p class="page-subtitle" *ngIf="isAdmin">Manage nail services</p>
+      <p class="page-subtitle" *ngIf="!isAdmin">Choose your nail service</p>
+    </div>
+    <div class="header-actions">
+      <button *ngIf="isAdmin" class="add-service-btn" (click)="addService()">
+        <span class="btn-icon">+</span>
+        Add Service
+      </button>
+      <a class="back-btn" routerLink="/">← Back to Home</a>
+    </div>
+  </div>
+
+  <!-- Message display -->
+  <div *ngIf="message" class="message" (click)="clearMessage()">
+    {{ message }}
+  </div>
+
+  <div class="services-grid">
+    <div 
+      *ngFor="let service of services" 
+      class="service-card" 
+      [class.admin-card]="isAdmin"
+      [class.hovered]="hoveredCard === service.id"
+      [class.selected]="selectedService?.id === service.id"
+      (mouseenter)="onCardHover(service.id)"
+      (mouseleave)="onCardLeave()"
+      (click)="selectService(service)">
+      <div class="service-header">
+        <h3 class="service-name">{{ service.name }}</h3>
+        <div class="service-price">€{{ service.price }}</div>
+      </div>
+      
+      <p class="service-description">{{ service.description }}</p>
+      
+      <div class="service-details">
+        <div class="detail-item">
+          <span class="detail-label">Duration:</span>
+          <span class="detail-value">{{ service.duration }} minutes</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Price:</span>
+          <span class="detail-value">€{{ service.price }}</span>
+        </div>
+      </div>
+      
+      <!-- Admin Actions -->
+      <div *ngIf="isAdmin" class="admin-actions">
+        <button class="edit-btn" (click)="editService(service)">
+          <span class="btn-icon">✏️</span>
+          Edit
+        </button>
+        <button class="delete-btn" (click)="deleteService(service)">
+          <span class="btn-icon">🗑️</span>
+          Delete
+        </button>
+      </div>
+      
+      <!-- Book Button -->
+      <button 
+        *ngIf="isLoggedIn" 
+        class="book-btn" 
+        (click)="selectService(service)">
+        Book This Service
+      </button>
+      
+      <!-- Login Required Button -->
+      <button 
+        *ngIf="!isLoggedIn" 
+        class="login-required-btn" 
+        (click)="selectService(service)">
+        🔒 Login Required to Book
+      </button>
+    </div>
+  </div>
+
+  <!-- Service Form Modal -->
+  <div *ngIf="showServiceForm" class="modal-overlay" (click)="closeServiceForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editingService ? 'Edit Service' : 'Add New Service' }}</h3>
+        <button class="close-btn" (click)="closeServiceForm()">×</button>
+      </div>
+      
+      <form [formGroup]="serviceForm" (ngSubmit)="saveService()" class="service-form">
+        <div class="form-group">
+          <label for="name">Service Name *</label>
+          <input 
+            type="text" 
+            id="name" 
+            formControlName="name" 
+            placeholder="e.g., Manicure, Pedicure"
+            class="form-input"
+          >
+          <div *ngIf="serviceForm.get('name')?.invalid && serviceForm.get('name')?.touched" class="error-message">
+            Service name is required (minimum 2 characters)
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea 
+            id="description" 
+            formControlName="description" 
+            placeholder="Describe what this service includes..."
+            class="form-textarea"
+            rows="3"
+          ></textarea>
+          <div *ngIf="serviceForm.get('description')?.invalid && serviceForm.get('description')?.touched" class="error-message">
+            Description is required (minimum 10 characters)
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="duration">Duration (minutes) *</label>
+            <input 
+              type="number" 
+              id="duration" 
+              formControlName="duration" 
+              placeholder="60"
+              class="form-input"
+              min="15"
+              max="300"
+            >
+            <div *ngIf="serviceForm.get('duration')?.invalid && serviceForm.get('duration')?.touched" class="error-message">
+              Duration must be between 15-300 minutes
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="price">Price (€) *</label>
+            <input 
+              type="number" 
+              id="price" 
+              formControlName="price" 
+              placeholder="45"
+              class="form-input"
+              min="1"
+              max="1000"
+              step="0.01"
+            >
+            <div *ngIf="serviceForm.get('price')?.invalid && serviceForm.get('price')?.touched" class="error-message">
+              Price must be between €1-€1000
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="closeServiceForm()">
+            Cancel
+          </button>
+          <button type="submit" class="save-btn" [disabled]="serviceForm.invalid">
+            {{ editingService ? 'Update Service' : 'Add Service' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

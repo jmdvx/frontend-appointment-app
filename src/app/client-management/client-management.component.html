@@ -1,0 +1,342 @@
+<section class="client-management-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Client Management</h1>
+      <p class="page-subtitle">Manage your clients and their information</p>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="stats-section" *ngIf="!loading && !errorMessage">
+    <div class="stat-card">
+      <div class="stat-number">{{ clients.length }}</div>
+      <div class="stat-label">Total Clients</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ getActiveClientsCount() }}</div>
+      <div class="stat-label">Active Clients</div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading clients...</p>
+  </div>
+  
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <div class="error-content">
+      <h3>Unable to load clients</h3>
+      <p>{{ errorMessage }}</p>
+      <button class="retry-button" (click)="loadClients()">
+        Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !errorMessage && clients.length === 0" class="empty-state">
+    <div class="empty-content">
+      <div class="empty-icon">👥</div>
+      <h3>No clients found</h3>
+      <p>Clients will appear here once they register for an account.</p>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div *ngIf="!loading && !errorMessage && clients.length > 0" class="search-filter-section">
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <div class="search-input-container">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()"
+          placeholder="Search clients by name, email, or phone..."
+          class="search-input"
+        >
+        <button *ngIf="searchQuery" (click)="searchQuery = ''; onSearchChange()" class="clear-search-btn">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-row">
+      <!-- Status Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Status:</label>
+        <select [(ngModel)]="statusFilter" (change)="onFilterChange()" class="filter-select">
+          <option value="all">All Clients</option>
+          <option value="active">Active Only</option>
+          <option value="banned">Banned Only</option>
+        </select>
+      </div>
+
+      <!-- Appointment Count Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Appointments:</label>
+        <select [(ngModel)]="appointmentCountFilter" (change)="onFilterChange()" class="filter-select">
+          <option value="all">All</option>
+          <option value="0">0 appointments</option>
+          <option value="1-5">1-5 appointments</option>
+          <option value="6-10">6-10 appointments</option>
+          <option value="10+">10+ appointments</option>
+        </select>
+      </div>
+
+      <!-- Date Joined Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Joined:</label>
+        <select [(ngModel)]="dateJoinedFilter" (change)="onFilterChange()" class="filter-select">
+          <option value="all">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="year">This Year</option>
+        </select>
+      </div>
+
+      <!-- Role Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Role:</label>
+        <select [(ngModel)]="roleFilter" (change)="onFilterChange()" class="filter-select">
+          <option value="all">All Users</option>
+          <option value="admin">Administrators Only</option>
+        </select>
+      </div>
+
+      <!-- Sort Options -->
+      <div class="filter-group">
+        <label class="filter-label">Sort by:</label>
+        <select [(ngModel)]="sortBy" (change)="onSortChange()" class="filter-select">
+          <option value="name">Name</option>
+          <option value="dateJoined">Date Joined</option>
+          <option value="lastAppointment">Last Appointment</option>
+          <option value="appointmentCount">Appointment Count</option>
+        </select>
+      </div>
+
+      <!-- Sort Order -->
+      <div class="filter-group">
+        <button 
+          (click)="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; onSortChange()" 
+          class="sort-order-btn"
+          [class.desc]="sortOrder === 'desc'"
+        >
+          {{ sortOrder === 'asc' ? '↑' : '↓' }}
+        </button>
+      </div>
+
+      <!-- Clear Filters -->
+      <div class="filter-group">
+        <button (click)="clearFilters()" class="clear-filters-btn">
+          Clear All
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="results-info">
+      <span class="results-count">
+        Showing {{ getFilteredClientsCount() }} of {{ clients.length }} clients
+      </span>
+    </div>
+  </div>
+
+  <!-- Clients List -->
+  <div *ngIf="!loading && !errorMessage && clients.length > 0" class="clients-section">
+    <div class="clients-grid">
+      <div *ngFor="let client of filteredClients" class="client-card" [class.banned-client]="client.isBanned">
+        <!-- Client Header -->
+        <div class="client-header">
+          <div class="client-info">
+            <h3 class="client-name">
+              {{ client.name }}
+              <span *ngIf="client.isBanned" class="banned-indicator">🚫 BANNED</span>
+            </h3>
+            <!-- Client Roles -->
+            <div class="client-roles">
+              <div *ngIf="client.roles && client.roles.length > 0">
+                <span *ngFor="let role of client.roles" class="role-badge" [class]="getRoleBadgeClass(role)">
+                  {{ getRoleDisplayName(role) }}
+                </span>
+              </div>
+              <div *ngIf="!client.roles || client.roles.length === 0">
+                <span class="role-badge default-user">Default User</span>
+              </div>
+            </div>
+            <div class="client-contact">
+              <span class="client-email">{{ client.email }}</span>
+              <span class="client-phone">{{ client.phone }}</span>
+            </div>
+          </div>
+          <div class="client-actions">
+            <button class="action-btn view-edit-btn" (click)="viewOrEditClient(client)">
+              👁️✏️ View/Edit
+            </button>
+            <button class="action-btn ban-btn" (click)="banClient(client)" [disabled]="client.isBanned">
+              {{ client.isBanned ? '🚫 Banned' : '🚫 Ban' }}
+            </button>
+            <button class="action-btn delete-btn" (click)="deleteClient(client)">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Client Stats -->
+        <div class="client-stats">
+          <div class="stat-item">
+            <span class="stat-label">Joined:</span>
+            <span class="stat-value">{{ formatDate(client.dateJoined) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Appointments:</span>
+            <span class="stat-value">{{ getClientTotalAppointments(client) }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Last Visit:</span>
+            <span class="stat-value">{{ getClientLastAppointment(client) }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- No Results Message -->
+    <div *ngIf="filteredClients.length === 0 && clients.length > 0" class="no-results">
+      <div class="no-results-content">
+        <span class="no-results-icon">🔍</span>
+        <h3>No clients found</h3>
+        <p>Try adjusting your search criteria or filters</p>
+        <button (click)="clearFilters()" class="clear-filters-btn">
+          Clear All Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Client Details Modal -->
+  <div *ngIf="showClientDetails" class="modal-overlay" (click)="closeClientDetails()">
+    <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ selectedClient?.name }} - Client Details</h3>
+        <button class="close-btn" (click)="closeClientDetails()">×</button>
+      </div>
+      
+      <div class="client-details-content">
+        <!-- Client Information -->
+        <div class="details-section">
+          <h4>Contact Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Email:</span>
+              <span class="info-value">{{ selectedClient?.email }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Phone:</span>
+              <span class="info-value">{{ selectedClient?.phone }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Member Since:</span>
+              <span class="info-value">{{ formatDate(selectedClient?.dateJoined || '') }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointment History -->
+        <div class="details-section">
+          <h4>Appointment History ({{ clientAppointments.length }})</h4>
+          <div *ngIf="loadingClientDetails" class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading appointments...</p>
+          </div>
+          
+          <div *ngIf="!loadingClientDetails && clientAppointments.length === 0" class="empty-state">
+            <p>No appointments found for this client.</p>
+          </div>
+          
+          <div *ngIf="!loadingClientDetails && clientAppointments.length > 0" class="appointments-list">
+            <div *ngFor="let appointment of clientAppointments" class="appointment-item">
+              <div class="appointment-date">{{ formatDate(appointment.date) }}</div>
+              <div class="appointment-service">{{ appointment.title }}</div>
+              <div class="appointment-status">{{ appointment.attendees[0]?.rsvp | titlecase }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client Notes -->
+        <div *ngIf="selectedClient?.notes" class="details-section">
+          <h4>Notes</h4>
+          <p>{{ selectedClient?.notes }}</p>
+        </div>
+
+        <!-- Client Roles -->
+        <div class="details-section">
+          <h4>Administrator Access</h4>
+          <div class="roles-management">
+            <div class="current-roles">
+              <div *ngIf="hasRole(selectedClient!, 'admin'); else noAdminRole" class="roles-display">
+                <span class="role-badge role-badge-admin">
+                  Administrator
+                  <button class="remove-role-btn" (click)="removeRole(selectedClient!, 'admin')" title="Remove admin role">
+                    ×
+                  </button>
+                </span>
+              </div>
+              <ng-template #noAdminRole>
+                <p class="no-roles-message">No administrator access</p>
+              </ng-template>
+            </div>
+            
+            <div class="available-roles">
+              <div class="role-options">
+                <label class="role-option">
+                  <input 
+                    type="checkbox" 
+                    [checked]="hasRole(selectedClient!, 'admin')"
+                    (change)="toggleRole(selectedClient!, 'admin')">
+                  <span class="role-name">Grant Administrator Access</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client Preferences -->
+        <div *ngIf="selectedClient?.preferences" class="details-section">
+          <h4>Preferences</h4>
+          <div class="preferences-display">
+            <div *ngIf="selectedClient?.preferences?.favoriteServices?.length" class="preference-item">
+              <span class="preference-label">Favorite Services:</span>
+              <span class="preference-value">{{ selectedClient?.preferences?.favoriteServices?.join(', ') }}</span>
+            </div>
+            <div *ngIf="selectedClient?.preferences?.preferredTimes?.length" class="preference-item">
+              <span class="preference-label">Preferred Times:</span>
+              <span class="preference-value">{{ selectedClient?.preferences?.preferredTimes?.join(', ') }}</span>
+            </div>
+            <div *ngIf="selectedClient?.preferences?.allergies" class="preference-item">
+              <span class="preference-label">Allergies:</span>
+              <span class="preference-value">{{ selectedClient?.preferences?.allergies }}</span>
+            </div>
+            <div *ngIf="selectedClient?.preferences?.specialRequests" class="preference-item">
+              <span class="preference-label">Special Requests:</span>
+              <span class="preference-value">{{ selectedClient?.preferences?.specialRequests }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Edit Button -->
+        <div class="details-actions">
+          <button class="edit-client-btn" (click)="startEditClient()">
+            <span class="btn-icon">✏️</span>
+            Edit Client Information
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

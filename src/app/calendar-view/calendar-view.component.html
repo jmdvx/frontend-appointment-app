@@ -1,0 +1,472 @@
+<section class="calendar-container">
+  <!-- Calendar Navigation -->
+  <div class="calendar-nav">
+    <button class="nav-btn" (click)="previousMonth()">
+      <span class="nav-icon">‹</span>
+    </button>
+    <h2 class="month-year">{{ getMonthYearDisplay() }}</h2>
+    <button class="nav-btn" (click)="nextMonth()">
+      <span class="nav-icon">›</span>
+    </button>
+    <div class="nav-actions">
+      <button class="book-walkin-btn" (click)="openWalkInBooking()">
+        <span class="btn-icon">👤</span>
+        Book Walk-in Client
+      </button>
+      <button class="refresh-btn" (click)="forceRefreshCalendar()" title="Refresh calendar data">
+        <span class="btn-icon">🔄</span>
+        Refresh
+      </button>
+      <button class="today-btn" (click)="goToToday()">
+        📅 Today
+      </button>
+    </div>
+  </div>
+
+  <!-- Calendar Stats -->
+  <div class="calendar-stats" *ngIf="!loading && !errorMessage">
+    <div class="stat-item">
+      <span class="stat-label">Appointments this month:</span>
+      <span class="stat-value">{{ getTotalAppointmentsForMonth() }}</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading calendar...</p>
+  </div>
+  
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <div class="error-content">
+      <h3>Unable to load calendar</h3>
+      <p>{{ errorMessage }}</p>
+      <button class="retry-button" (click)="loadAppointments()">
+        Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="success-message">
+    <div class="success-content">
+      <span class="success-icon">✅</span>
+      <span class="success-text">{{ successMessage }}</span>
+    </div>
+  </div>
+
+  <!-- Calendar Grid -->
+  <div *ngIf="!loading && !errorMessage" class="calendar-wrapper">
+    <div class="calendar-grid">
+      <!-- Day Headers -->
+      <div class="day-header" *ngFor="let dayName of dayNames">
+        {{ dayName }}
+      </div>
+      
+      <!-- Calendar Days -->
+      <div 
+        *ngFor="let day of calendarDays" 
+        class="calendar-day"
+        [class.current-month]="day.isCurrentMonth"
+        [class.today]="day.isToday"
+        [class.past-day]="day.isPast"
+        [class.has-appointments]="hasAppointments(day)"
+        [class.blocked-day]="day.isBlocked"
+        [class.expanded]="isDayExpanded(day)"
+        (click)="toggleDayExpansion(day)"
+        (contextmenu)="canInteractWithDay(day) && toggleDateBlock(day); $event.preventDefault()"
+        [title]="day.isBlocked ? 'Blocked: ' + day.blockedReason : 'Right-click to block/unblock this day'">
+        
+        <div class="day-number">{{ day.date.getDate() }}</div>
+        
+        <!-- Appointments for this day -->
+        <div class="day-appointments" *ngIf="hasAppointments(day)">
+          <div 
+            *ngFor="let appointment of day.appointments" 
+            class="appointment-item"
+            [title]="getServiceInfo(appointment).name + ' - ' + formatTime(appointment.date)">
+            
+            <div class="appointment-time">{{ formatTime(appointment.date) }}</div>
+            <div class="appointment-service">{{ getServiceInfo(appointment).name }}</div>
+            <div class="appointment-client">{{ appointment.attendees[0].name }}</div>
+          </div>
+          
+          <!-- Show more indicator if there are many appointments -->
+          <div *ngIf="day.appointments.length > 3" class="more-appointments">
+            +{{ day.appointments.length - 3 }} more
+          </div>
+        </div>
+        
+        <!-- Appointment count badge -->
+        <div *ngIf="hasAppointments(day)" class="appointment-count">
+          {{ getAppointmentsCountForDay(day) }}
+        </div>
+        
+        <!-- Blocked day indicator -->
+        <div *ngIf="day.isBlocked" class="blocked-indicator">
+          🚫
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expanded Day Detail View -->
+  <div *ngIf="expandedDay" class="expanded-day-overlay" (click)="closeExpandedDay()">
+    <div class="expanded-day-content" (click)="$event.stopPropagation()">
+      <div class="expanded-day-header">
+        <div class="expanded-day-title-section">
+          <h3 class="expanded-day-title">{{ formatDate(expandedDay.date) }}</h3>
+          <div *ngIf="expandedDay.isBlocked" class="blocked-status">
+            <span class="blocked-icon">🚫</span>
+            <span class="blocked-text">Day Blocked</span>
+          </div>
+        </div>
+        <div class="expanded-day-actions">
+          <button 
+            *ngIf="canInteractWithDay(expandedDay)"
+            class="book-walkin-day-btn"
+            (click)="openWalkInBookingForDay(expandedDay)">
+            <span class="btn-icon">👤</span>
+            Book Walk-in Client
+          </button>
+          <button 
+            *ngIf="canInteractWithDay(expandedDay)"
+            class="block-toggle-btn"
+            [class.block-btn]="!expandedDay.isBlocked"
+            [class.unblock-btn]="expandedDay.isBlocked"
+            (click)="toggleDateBlock(expandedDay)">
+            {{ expandedDay.isBlocked ? 'Unblock Day' : 'Block Day' }}
+          </button>
+          <button class="close-button" (click)="closeExpandedDay()">
+            <span class="close-icon">×</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="expanded-day-body">
+        <div *ngIf="!hasAppointments(expandedDay)" class="no-appointments">
+          <div class="no-appointments-icon" [class.blocked-icon-large]="expandedDay.isBlocked">
+            {{ expandedDay.isBlocked ? '🚫' : '📅' }}
+          </div>
+          <h4>{{ expandedDay.isBlocked ? 'Day Blocked Off' : 'No appointments scheduled' }}</h4>
+          <p *ngIf="expandedDay.isBlocked && expandedDay.blockedReason">
+            Reason: {{ expandedDay.blockedReason }}
+          </p>
+          <p *ngIf="!expandedDay.isBlocked">
+            This day is free of appointments.
+          </p>
+          <p *ngIf="expandedDay.isBlocked && !expandedDay.blockedReason">
+            This day has been blocked off and is unavailable for appointments.
+          </p>
+        </div>
+        
+        <div *ngIf="hasAppointments(expandedDay)" class="appointments-list">
+          <div class="appointments-header">
+            <h4>{{ getAppointmentsCountForDay(expandedDay) }} Appointment{{ getAppointmentsCountForDay(expandedDay) !== 1 ? 's' : '' }}</h4>
+          </div>
+          
+          <div class="appointment-cards">
+            <div 
+              *ngFor="let appointment of expandedDay.appointments; let i = index" 
+              class="appointment-card">
+              
+              <div class="appointment-card-header">
+                <div class="appointment-time-badge">
+                  {{ formatTime(appointment.date) }}
+                </div>
+                <div class="appointment-status">
+                  <span class="status-dot"></span>
+                  Scheduled
+                </div>
+              </div>
+              
+              <div class="appointment-card-body">
+                <div class="appointment-service-info">
+                  <h5 class="service-name">{{ getServiceInfo(appointment).name }}</h5>
+                  <p class="service-price">{{ getServiceInfo(appointment).price }}</p>
+                </div>
+                
+                <div class="appointment-client-info">
+                  <div class="client-name">
+                    <span class="client-icon">👤</span>
+                    {{ appointment.attendees[0].name }}
+                  </div>
+                  <div class="client-email">
+                    <span class="email-icon">✉️</span>
+                    {{ appointment.attendees[0].email }}
+                  </div>
+                </div>
+                
+                <div class="appointment-description" *ngIf="appointment.description">
+                  <h6>Description:</h6>
+                  <p>{{ appointment.description }}</p>
+                </div>
+                
+                <!-- Appointment Actions -->
+                <div class="appointment-actions">
+                  <button 
+                    class="action-btn reschedule-btn"
+                    (click)="startReschedule(appointment)"
+                    [disabled]="isReschedulingAppointment(appointment._id!)"
+                    title="Reschedule appointment">
+                    <span class="action-icon">📅</span>
+                    {{ isReschedulingAppointment(appointment._id!) ? 'Rescheduling...' : 'Reschedule' }}
+                  </button>
+                  
+                  <button 
+                    class="action-btn cancel-btn"
+                    (click)="cancelAppointment(appointment._id!)"
+                    [disabled]="isCancelingAppointment(appointment._id!)"
+                    title="Cancel appointment">
+                    <span class="action-icon">❌</span>
+                    {{ isCancelingAppointment(appointment._id!) ? 'Canceling...' : 'Cancel' }}
+                  </button>
+                  
+                  <button 
+                    class="action-btn delete-btn"
+                    (click)="deleteAppointment(appointment._id!)"
+                    [disabled]="isDeletingAppointment(appointment._id!)"
+                    title="Permanently delete appointment">
+                    <span class="action-icon">🗑️</span>
+                    {{ isDeletingAppointment(appointment._id!) ? 'Deleting...' : 'Delete' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="calendar-legend" *ngIf="!loading && !errorMessage">
+    <div class="legend-item">
+      <div class="legend-color today"></div>
+      <span>Today</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color has-appointments"></div>
+      <span>Has Appointments</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color blocked-day"></div>
+      <span>Blocked Days</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color past-day"></div>
+      <span>Past Days</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-help">
+        <span class="help-text">💡 Right-click any day to block/unblock it</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Walk-in Client Booking Modal -->
+  <div *ngIf="showWalkInModal" class="modal-overlay" (click)="closeWalkInModal()">
+    <div class="modal-content walkin-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Book Walk-in Client</h3>
+        <button class="close-btn" (click)="closeWalkInModal()">×</button>
+      </div>
+      
+      <form [formGroup]="walkInForm" (ngSubmit)="submitWalkInBooking()" class="walkin-form">
+        <div class="form-section">
+          <h4>Client Information</h4>
+          
+          <div class="form-group">
+            <label for="clientName">Full Name *</label>
+            <input 
+              type="text" 
+              id="clientName" 
+              formControlName="clientName" 
+              class="form-input" 
+              placeholder="Enter client's full name">
+            <div class="error-message" *ngIf="getFieldError('clientName')">
+              {{ getFieldError('clientName') }}
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="clientEmail">Email Address *</label>
+            <input 
+              type="email" 
+              id="clientEmail" 
+              formControlName="clientEmail" 
+              class="form-input" 
+              placeholder="Enter client's email">
+            <div class="error-message" *ngIf="getFieldError('clientEmail')">
+              {{ getFieldError('clientEmail') }}
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="clientPhone">Phone Number *</label>
+            <input 
+              type="tel" 
+              id="clientPhone" 
+              formControlName="clientPhone" 
+              class="form-input" 
+              placeholder="0833866364">
+            <div class="error-message" *ngIf="getFieldError('clientPhone')">
+              {{ getFieldError('clientPhone') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4>Appointment Details</h4>
+          
+          <div class="form-group">
+            <label for="selectedDate">Date *</label>
+            <input 
+              type="date" 
+              id="selectedDate" 
+              formControlName="selectedDate" 
+              class="form-input"
+              [min]="getTodayDate()"
+              [class.no-slots-date]="walkInForm.get('selectedDate')?.value && !hasAvailableTimeSlots(walkInForm.get('selectedDate')?.value)">
+            <div class="error-message" *ngIf="getFieldError('selectedDate')">
+              {{ getFieldError('selectedDate') }}
+            </div>
+            <div class="warning-message" *ngIf="walkInForm.get('selectedDate')?.value && !hasAvailableTimeSlots(walkInForm.get('selectedDate')?.value)">
+              ⚠️ This date has no available time slots for walk-in bookings. All time slots are already booked.
+            </div>
+            <div class="help-text" *ngIf="walkInForm.get('selectedDate')?.value && hasAvailableTimeSlots(walkInForm.get('selectedDate')?.value)">
+              ✅ This date has {{ getAvailableTimeSlotsForDate(walkInForm.get('selectedDate')?.value).length }} available time slots for walk-in bookings.
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="selectedTime">Time *</label>
+            <select 
+              id="selectedTime" 
+              formControlName="selectedTime" 
+              class="form-select"
+              [disabled]="!hasAvailableTimeSlots(walkInForm.get('selectedDate')?.value || '')">
+              <option value="">Select a time</option>
+              <option 
+                *ngFor="let time of getAvailableTimeSlotsForDate(walkInForm.get('selectedDate')?.value || '')" 
+                [value]="time"
+                [disabled]="!isTimeSlotAvailable(walkInForm.get('selectedDate')?.value || '', time)">
+                {{ time }} {{ !isTimeSlotAvailable(walkInForm.get('selectedDate')?.value || '', time) ? '(Booked)' : '' }}
+              </option>
+            </select>
+            <div class="error-message" *ngIf="getFieldError('selectedTime')">
+              {{ getFieldError('selectedTime') }}
+            </div>
+            <div class="help-text" *ngIf="walkInForm.get('selectedDate')?.value && hasAvailableTimeSlots(walkInForm.get('selectedDate')?.value)">
+              Available times for {{ walkInForm.get('selectedDate')?.value }}: {{ getAvailableTimeSlotsForDate(walkInForm.get('selectedDate')?.value).length }} slots
+            </div>
+            <div class="warning-message" *ngIf="walkInForm.get('selectedDate')?.value && !hasAvailableTimeSlots(walkInForm.get('selectedDate')?.value)">
+              Time selection disabled - no available time slots on this date.
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="service">Service *</label>
+            <select 
+              id="service" 
+              formControlName="service" 
+              class="form-select">
+              <option value="">Select a service</option>
+              <option *ngFor="let service of availableServices" [value]="service.id">
+                {{ service.name }} - {{ service.price }}
+              </option>
+            </select>
+            <div class="error-message" *ngIf="getFieldError('service')">
+              {{ getFieldError('service') }}
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea 
+              id="notes" 
+              formControlName="notes" 
+              class="form-textarea" 
+              placeholder="Any special requests or notes..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4>Account Creation (Optional)</h4>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input 
+                type="checkbox" 
+                formControlName="createAccount"
+                (change)="onCreateAccountToggle($event)">
+              <span>Create account for this client</span>
+            </label>
+            <p class="help-text">
+              Creating an account allows the client to manage their appointments and receive notifications. 
+              <strong>You can still book the appointment without creating an account - the time slot will be reserved.</strong>
+            </p>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="closeWalkInModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="!walkInForm.valid || isSubmittingWalkIn">
+            <span *ngIf="!isSubmittingWalkIn">Book Appointment</span>
+            <span *ngIf="isSubmittingWalkIn">Booking...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Reschedule Modal -->
+  <div *ngIf="showRescheduleForm" class="modal-overlay" (click)="cancelReschedule()">
+    <div class="modal-content reschedule-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Reschedule Appointment</h3>
+        <button class="close-btn" (click)="cancelReschedule()">×</button>
+      </div>
+      
+      <form [formGroup]="rescheduleForm" (ngSubmit)="submitReschedule()" class="reschedule-form">
+        <div class="form-group">
+          <label for="rescheduleDate">New Date:</label>
+          <input 
+            type="date" 
+            id="rescheduleDate" 
+            formControlName="date" 
+            class="form-input"
+            [min]="getCurrentDateString()">
+        </div>
+        
+        <div class="form-group">
+          <label for="rescheduleTime">New Time:</label>
+          <select id="rescheduleTime" formControlName="time" class="form-select">
+            <option value="">Select time</option>
+            <option *ngFor="let slot of getAvailableTimeSlotsForRescheduleDate(rescheduleForm.get('date')?.value)" [value]="slot">
+              {{ slot }}
+            </option>
+          </select>
+          <div *ngIf="getAvailableTimeSlotsForRescheduleDate(rescheduleForm.get('date')?.value).length === 0 && rescheduleForm.get('date')?.value" class="no-slots-message">
+            ⚠️ No available time slots for this date
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cancelReschedule()">
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn-primary"
+            [disabled]="!rescheduleForm.valid || isReschedulingAppointment(rescheduleAppointmentId || '')">
+            <span *ngIf="!isReschedulingAppointment(rescheduleAppointmentId || '')">Reschedule</span>
+            <span *ngIf="isReschedulingAppointment(rescheduleAppointmentId || '')">Rescheduling...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

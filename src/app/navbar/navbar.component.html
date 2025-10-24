@@ -1,0 +1,164 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a routerLink="/" class="brand-link"></a>
+    </div>
+    
+    <button class="mobile-menu-btn" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen" aria-label="Toggle navigation menu">
+      <span *ngIf="!mobileMenuOpen">Menu</span>
+      <span *ngIf="mobileMenuOpen">Close</span>
+    </button>
+    
+    <!-- Desktop Navigation -->
+    <div class="desktop-nav">
+      <!-- Main Navigation Items (Center) -->
+      <ul class="nav-menu nav-main">
+        <li *ngFor="let item of navItems" class="nav-item">
+          <!-- Show regular items (Home, Book Appointment) -->
+          <ng-container *ngIf="!item.adminOnly && !item.showWhenLoggedOut && !item.showWhenLoggedIn">
+            <a 
+              class="nav-link" 
+              [routerLink]="item.path" 
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: item.path === '/'}"
+              (click)="onNavItemClick(item)">
+              {{ item.label }}
+            </a>
+          </ng-container>
+          
+          <!-- Admin dropdown (only show for admin users) -->
+          <ng-container *ngIf="item.adminOnly && isAdmin()">
+            <div class="admin-dropdown">
+              <button 
+                class="nav-link admin-dropdown-btn" 
+                (click)="toggleAdminDropdown()"
+                [class.active]="adminDropdownOpen">
+                Admin Privileges
+                <span class="dropdown-arrow" [class.open]="adminDropdownOpen">▼</span>
+              </button>
+              
+              <ul class="admin-dropdown-menu" [class.open]="adminDropdownOpen">
+                <li *ngFor="let adminItem of adminItems" class="admin-dropdown-item">
+                  <a 
+                    class="admin-dropdown-link" 
+                    [routerLink]="adminItem.path" 
+                    routerLinkActive="active"
+                    (click)="onAdminItemClick()">
+                    {{ adminItem.label }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </ng-container>
+
+          <!-- Show user-specific items when logged in -->
+          <ng-container *ngIf="item.showWhenLoggedIn && isAuthenticated()">
+            <a 
+              class="nav-link" 
+              [routerLink]="item.path" 
+              routerLinkActive="active"
+              (click)="closeMobileMenu()">
+              {{ item.label }}
+            </a>
+          </ng-container>
+        </li>
+      </ul>
+
+      <!-- Authentication Items (Right) -->
+      <ul class="nav-menu nav-auth">
+        <!-- Show login and register when logged out -->
+        <li *ngFor="let item of navItems" class="nav-item">
+          <ng-container *ngIf="item.showWhenLoggedOut && !isAuthenticated()">
+            <a 
+              class="nav-link" 
+              [routerLink]="item.path" 
+              routerLinkActive="active"
+              (click)="closeMobileMenu()">
+              {{ item.label }}
+            </a>
+          </ng-container>
+        </li>
+        
+        <!-- Show user info and logout when logged in -->
+        <li *ngIf="isAuthenticated()" class="nav-item">
+          <span class="user-name">{{ currentUser()?.name }}</span>
+          <a class="nav-link" (click)="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" [class.open]="mobileMenuOpen">
+      <ul class="mobile-menu">
+        <li *ngFor="let item of navItems" class="mobile-nav-item">
+          <!-- Show regular items (Home, Book Appointment) -->
+          <ng-container *ngIf="!item.adminOnly && !item.showWhenLoggedOut && !item.showWhenLoggedIn">
+            <a 
+              class="mobile-nav-link" 
+              [routerLink]="item.path" 
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: item.path === '/'}"
+              (click)="onNavItemClick(item)">
+              {{ item.label }}
+            </a>
+          </ng-container>
+          
+          <!-- Admin dropdown (only show for admin users) -->
+          <ng-container *ngIf="item.adminOnly && isAdmin()">
+            <div class="mobile-admin-section">
+              <button 
+                class="mobile-nav-link mobile-admin-btn" 
+                (click)="toggleAdminDropdown()"
+                [class.active]="adminDropdownOpen">
+                Admin Privileges
+                <span class="dropdown-arrow" [class.open]="adminDropdownOpen">▼</span>
+              </button>
+              
+              <ul class="mobile-admin-menu" [class.open]="adminDropdownOpen">
+                <li *ngFor="let adminItem of adminItems" class="mobile-admin-item">
+                  <a 
+                    class="mobile-admin-link" 
+                    [routerLink]="adminItem.path" 
+                    routerLinkActive="active"
+                    (click)="onAdminItemClick()">
+                    {{ adminItem.label }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </ng-container>
+
+          <!-- Show user-specific items when logged in -->
+          <ng-container *ngIf="item.showWhenLoggedIn && isAuthenticated()">
+            <a 
+              class="mobile-nav-link" 
+              [routerLink]="item.path" 
+              routerLinkActive="active"
+              (click)="closeMobileMenu()">
+              {{ item.label }}
+            </a>
+          </ng-container>
+
+          <!-- Show login and register when logged out -->
+          <ng-container *ngIf="item.showWhenLoggedOut && !isAuthenticated()">
+            <a 
+              class="mobile-nav-link" 
+              [routerLink]="item.path" 
+              routerLinkActive="active"
+              (click)="closeMobileMenu()">
+              {{ item.label }}
+            </a>
+          </ng-container>
+        </li>
+        
+        <!-- Show user info and logout when logged in -->
+        <li *ngIf="isAuthenticated()" class="mobile-nav-item mobile-user-section">
+          <div class="mobile-user-info">
+            <span class="mobile-user-name">{{ currentUser()?.name }}</span>
+            <button class="mobile-logout" (click)="logout()">Logout</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

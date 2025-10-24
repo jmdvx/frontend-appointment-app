@@ -1,0 +1,194 @@
+<div class="account-details-container">
+  <div class="account-details-card">
+    <h1 class="account-title">Account Details</h1>
+    
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="success-message" (click)="clearMessages()">
+      <span>✅</span>
+      {{ successMessage }}
+    </div>
+    
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message" (click)="clearMessages()">
+      <span>❌</span>
+      {{ errorMessage }}
+    </div>
+    
+    <form class="account-form" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          [(ngModel)]="userDetails.name" 
+          class="form-input"
+          [class.error]="getFieldError('name')"
+          (input)="onFieldChange('name')"
+          required>
+        <div *ngIf="getFieldError('name')" class="field-error">
+          {{ getFieldError('name') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          [(ngModel)]="userDetails.email" 
+          class="form-input"
+          [class.error]="getFieldError('email')"
+          (input)="onFieldChange('email')"
+          required>
+        <div *ngIf="getFieldError('email')" class="field-error">
+          {{ getFieldError('email') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input 
+          type="tel" 
+          id="phone" 
+          name="phone" 
+          [(ngModel)]="userDetails.phone" 
+          class="form-input"
+          [class.error]="getFieldError('phone')"
+          (input)="onPhoneInput($event)"
+          placeholder="0833866364"
+          required>
+        <div *ngIf="getFieldError('phone')" class="field-error">
+          {{ getFieldError('phone') }}
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="isAdmin">
+        <label for="role">Account Type</label>
+        <select 
+          id="role" 
+          name="role" 
+          [(ngModel)]="userDetails.role" 
+          class="form-select"
+          disabled>
+          <option value="user">User</option>
+          <option value="admin">Administrator</option>
+        </select>
+        <small class="form-help">Account type cannot be changed</small>
+      </div>
+
+      <!-- Password Change Section -->
+      <div class="password-section">
+        <h3 class="section-title">Change Password</h3>
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input 
+            type="password" 
+            id="currentPassword" 
+            name="currentPassword" 
+            [(ngModel)]="passwordData.currentPassword" 
+            class="form-input"
+            [class.error]="getFieldError('currentPassword')"
+            (input)="onFieldChange('currentPassword')"
+            placeholder="Enter current password">
+          <div *ngIf="getFieldError('currentPassword')" class="field-error">
+            {{ getFieldError('currentPassword') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input 
+            type="password" 
+            id="newPassword" 
+            name="newPassword" 
+            [(ngModel)]="passwordData.newPassword" 
+            class="form-input"
+            [class.error]="getFieldError('newPassword')"
+            (input)="onFieldChange('newPassword')"
+            placeholder="Enter new password">
+          <div *ngIf="getFieldError('newPassword')" class="field-error">
+            {{ getFieldError('newPassword') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirm New Password</label>
+          <input 
+            type="password" 
+            id="confirmNewPassword" 
+            name="confirmNewPassword" 
+            [(ngModel)]="passwordData.confirmNewPassword" 
+            class="form-input"
+            [class.error]="getFieldError('confirmNewPassword')"
+            (input)="onFieldChange('confirmNewPassword')"
+            placeholder="Confirm new password">
+          <div *ngIf="getFieldError('confirmNewPassword')" class="field-error">
+            {{ getFieldError('confirmNewPassword') }}
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn-secondary" 
+            (click)="changePassword()"
+            [disabled]="!isPasswordFormValid() || isChangingPassword">
+            <span *ngIf="!isChangingPassword">Change Password</span>
+            <span *ngIf="isChangingPassword">Changing Password...</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn-primary" 
+          [disabled]="!isFormValid() || isSubmitting || isAnimating">
+          <span *ngIf="!isSubmitting">Update Account</span>
+          <span *ngIf="isSubmitting">Updating...</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Delete Confirmation Modal -->
+    <div *ngIf="showDeleteConfirmation" class="modal-overlay" (click)="showDeleteConfirmation = false">
+      <div class="modal-content danger-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>⚠️ Delete Account</h3>
+          <button class="close-btn" (click)="showDeleteConfirmation = false">×</button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Are you absolutely sure?</strong></p>
+          <p>This will permanently delete your account and remove all your data from our servers. This action cannot be undone.</p>
+          <div class="form-group">
+            <label for="confirmDelete">Type "DELETE" to confirm:</label>
+            <input 
+              type="text" 
+              id="confirmDelete" 
+              [(ngModel)]="deleteConfirmation" 
+              class="form-input"
+              placeholder="Type DELETE here">
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button 
+            type="button" 
+            class="btn-secondary" 
+            (click)="showDeleteConfirmation = false">
+            Cancel
+          </button>
+          <button 
+            type="button" 
+            class="btn-danger" 
+            (click)="deleteAccount()"
+            [disabled]="deleteConfirmation !== 'DELETE' || isDeleting">
+            <span *ngIf="!isDeleting">Yes, Delete My Account</span>
+            <span *ngIf="isDeleting">Deleting Account...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

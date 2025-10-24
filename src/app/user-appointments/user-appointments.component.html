@@ -1,0 +1,126 @@
+<section class="user-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">My Appointments</h1>
+      <p class="page-subtitle">View your upcoming appointments</p>
+    </div>
+    <div class="header-actions">
+      <a class="back-button" routerLink="/">
+        <span class="back-icon">🏠</span>
+        Back to Home
+      </a>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="successMessage" class="success-message" (click)="clearMessage()">
+    <span class="success-icon">✅</span>
+    {{ successMessage }}
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="stats-section" *ngIf="!loading && !errorMessage">
+    <div class="stat-card">
+      <div class="stat-number">{{ getTotalAppointments() }}</div>
+      <div class="stat-label">Your Appointments</div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading your appointments...</p>
+  </div>
+  
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <div class="error-content">
+      <h3>Unable to load appointments</h3>
+      <p>{{ errorMessage }}</p>
+      <button class="retry-button" (click)="loadUserAppointments()">
+        <span class="btn-icon">🔄</span>
+        Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !errorMessage && appointments.length === 0" class="empty-state">
+    <div class="empty-content">
+      <div class="empty-icon">📅</div>
+      <h3>No upcoming appointments</h3>
+      <p>You don't have any upcoming appointments scheduled.</p>
+      <a class="book-button" routerLink="/services">
+        <span class="btn-icon">💅</span>
+        Book an Appointment
+      </a>
+    </div>
+  </div>
+
+  <!-- Appointments List -->
+  <div *ngIf="!loading && !errorMessage && appointments.length > 0" class="appointments-section">
+    <div *ngFor="let appointment of appointments; let i = index" 
+         class="appointment-card" 
+         [class.next-appointment]="i === 0"
+         [class.hovered]="hoveredCard === appointment._id"
+         [class.urgency-high]="getUrgencyLevel(appointment) === 'high'"
+         [class.urgency-medium]="getUrgencyLevel(appointment) === 'medium'"
+         (mouseenter)="onCardHover(appointment._id!)"
+         (mouseleave)="onCardLeave()">
+      
+      <!-- Next Appointment Badge -->
+      <div *ngIf="i === 0" class="next-badge">Next Appointment</div>
+      
+      <!-- Urgency Badge -->
+      <div *ngIf="getUrgencyLevel(appointment) === 'high'" class="urgency-badge high">
+        <span class="urgency-icon">⚡</span>
+        Soon!
+      </div>
+      
+      <!-- Card Header -->
+      <div class="card-header">
+        <h3 class="appointment-title">{{ appointment.title }}</h3>
+        <div class="appointment-date">{{ formatDate(appointment.date) }}</div>
+        <div class="relative-time">{{ getRelativeTime(appointment.date) }} away</div>
+      </div>
+      
+      <!-- Service Details -->
+      <div class="service-details">
+        <div class="detail-item">
+          <span class="detail-label">Service:</span>
+          <span class="detail-value" [class.full-set-service]="getServiceInfo(appointment).name === 'Full Set'">{{ getServiceInfo(appointment).name }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <span class="detail-label">Price:</span>
+          <span class="detail-value price">{{ getServiceInfo(appointment).price }}</span>
+        </div>
+      </div>
+
+      <!-- Client Notes Section -->
+      <div *ngIf="getClientNotes(appointment)" class="client-notes-section">
+        <h4 class="notes-title">
+          <span class="notes-icon">💅</span>
+          Your Notes
+        </h4>
+        <div class="notes-content">
+          {{ getClientNotes(appointment) }}
+        </div>
+      </div>
+
+
+      <!-- Action Buttons -->
+      <div class="appointment-actions">
+        <button 
+          (click)="cancelAppointment(appointment)"
+          class="cancel-btn"
+          [class.within-24-hours]="isWithin24Hours(appointment)"
+        >
+          <span class="btn-icon">🚫</span>
+          Cancel Appointment
+          <span *ngIf="isWithin24Hours(appointment)" class="warning-text">⚠️ Within 24h</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

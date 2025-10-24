@@ -1,0 +1,1282 @@
+/* Hero Banner Styles */
+.hero-banner {
+  height: 60vh;
+  min-height: 500px;
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fef7ff 100%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated Background Elements */
+.animated-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Floating Shapes */
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(219, 39, 119, 0.2));
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+  width: 80px;
+  height: 80px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.shape-3 {
+  width: 60px;
+  height: 60px;
+  top: 30%;
+  right: 30%;
+  animation-delay: 4s;
+}
+
+.shape-4 {
+  width: 100px;
+  height: 100px;
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 1s;
+}
+
+.shape-5 {
+  width: 70px;
+  height: 70px;
+  top: 10%;
+  right: 50%;
+  animation-delay: 3s;
+}
+
+.shape-6 {
+  width: 90px;
+  height: 90px;
+  bottom: 40%;
+  right: 10%;
+  animation-delay: 5s;
+}
+
+/* Particles */
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(236, 72, 153, 0.6);
+  border-radius: 50%;
+  animation: particleFloat 8s linear infinite;
+}
+
+.particle-1 {
+  top: 15%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.particle-2 {
+  top: 25%;
+  right: 25%;
+  animation-delay: 1s;
+}
+
+.particle-3 {
+  top: 45%;
+  left: 15%;
+  animation-delay: 2s;
+}
+
+.particle-4 {
+  top: 55%;
+  right: 40%;
+  animation-delay: 3s;
+}
+
+.particle-5 {
+  bottom: 30%;
+  left: 30%;
+  animation-delay: 4s;
+}
+
+.particle-6 {
+  bottom: 20%;
+  right: 20%;
+  animation-delay: 5s;
+}
+
+.particle-7 {
+  top: 35%;
+  left: 50%;
+  animation-delay: 6s;
+}
+
+.particle-8 {
+  bottom: 45%;
+  right: 60%;
+  animation-delay: 7s;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translateY(-20px) rotate(90deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-10px) rotate(180deg);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-30px) rotate(270deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(50px);
+    opacity: 0;
+  }
+}
+
+@keyframes randomParticleFloat {
+  0% {
+    transform: translateY(0px) translateX(0px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120px) translateX(30px);
+    opacity: 0;
+  }
+}
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(219, 39, 119, 0.4));
+  z-index: 1;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 2;
+  position: relative;
+  max-width: 1200px;
+  width: 100%;
+  padding: 0 2rem;
+}
+
+.banner-text {
+  text-align: center;
+}
+
+
+.banner-title {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
+}
+
+.banner-subtitle {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 3rem;
+  color: white;
+  opacity: 0.95;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  line-height: 1.4;
+}
+
+.scroll-down-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 auto;
+}
+
+.scroll-down-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-arrow {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.scroll-down-btn:hover .scroll-arrow {
+  transform: translateY(3px);
+}
+
+/* Services Section */
+.services-section {
+  padding: 6rem 0;
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+  position: relative;
+  overflow: hidden;
+}
+
+.services-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="servicesGrain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ec4899" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="%23db2777" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="%23f472b6" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="%23ec4899" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="%23db2777" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23servicesGrain)"/></svg>');
+  opacity: 0.3;
+  z-index: 1;
+}
+
+/* Katie's Nail Post Banner */
+.katies-banner {
+  height: 50vh;
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fef7ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.katies-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(219, 39, 119, 0.4));
+  z-index: 1;
+}
+
+.katies-banner .banner-content {
+  text-align: center;
+  color: #374151;
+  z-index: 2;
+  position: relative;
+  max-width: 800px;
+  padding: 0 2rem;
+}
+
+.katies-banner .banner-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
+}
+
+.katies-banner .banner-subtitle {
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin-bottom: 0;
+  color: white;
+  opacity: 0.95;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  line-height: 1.4;
+}
+
+.container { 
+  max-width: 600px; 
+  margin: 0 auto; 
+  padding: 0 1rem; 
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #ec4899;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.button-group {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-block;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s;
+  min-width: 200px;
+}
+
+.book-btn {
+  background: #3b82f6;
+  color: white;
+  border: 2px solid #3b82f6;
+}
+
+.book-btn:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  transform: translateY(-2px);
+}
+
+.services-btn {
+  background: #ec4899;
+  color: white;
+  border: 2px solid #ec4899;
+}
+
+.services-btn:hover {
+  background: #db2777;
+  border-color: #db2777;
+  transform: translateY(-2px);
+}
+
+.view-btn {
+  background: white;
+  color: #ec4899;
+  border: 2px solid #ec4899;
+}
+
+.view-btn:hover {
+  background: #ec4899;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Large Desktop Screens (1200px+) */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1200px;
+  }
+  
+  .hero-banner {
+    height: 70vh;
+  }
+  
+  .banner-title {
+    font-size: 5rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 1.8rem;
+  }
+  
+  .katies-banner {
+    height: 60vh;
+  }
+  
+  .katies-banner .banner-title {
+    font-size: 4rem;
+  }
+  
+  .services-section {
+    padding: 8rem 0;
+  }
+  
+  .section-title {
+    font-size: 3.5rem;
+  }
+  
+  .signup-section {
+    padding: 8rem 2rem;
+  }
+  
+  .signup-title {
+    font-size: 3.5rem;
+  }
+}
+
+/* Desktop Screens (1024px - 1199px) */
+@media (max-width: 1199px) and (min-width: 1024px) {
+  .container {
+    max-width: 1000px;
+  }
+  
+  .hero-banner {
+    height: 65vh;
+  }
+  
+  .banner-title {
+    font-size: 4.5rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 1.6rem;
+  }
+  
+  .katies-banner {
+    height: 55vh;
+  }
+  
+  .katies-banner .banner-title {
+    font-size: 3.5rem;
+  }
+  
+  .services-section {
+    padding: 7rem 0;
+  }
+  
+  .section-title {
+    font-size: 3rem;
+  }
+  
+  .signup-section {
+    padding: 7rem 2rem;
+  }
+  
+  .signup-title {
+    font-size: 3rem;
+  }
+}
+
+/* Tablet Screens (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .container {
+    max-width: 800px;
+    padding: 0 2rem;
+  }
+  
+  .hero-banner {
+    height: 60vh;
+    background-attachment: scroll;
+  }
+  
+  .banner-title {
+    font-size: 3.5rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 1.4rem;
+  }
+  
+  .banner-content {
+    gap: 2rem;
+  }
+  
+  
+  .katies-banner {
+    height: 50vh;
+    background-attachment: scroll;
+  }
+  
+  .katies-banner .banner-title {
+    font-size: 3rem;
+  }
+  
+  .katies-banner .banner-subtitle {
+    font-size: 1.3rem;
+  }
+  
+  .scroll-down-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .services-section {
+    padding: 6rem 0;
+  }
+  
+  .section-title {
+    font-size: 2.8rem;
+  }
+  
+  .button-group {
+    gap: 1.5rem;
+  }
+  
+  .action-btn {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.2rem;
+    min-width: 220px;
+  }
+  
+  .signup-section {
+    padding: 6rem 2rem;
+  }
+  
+  .signup-content {
+    gap: 3rem;
+  }
+  
+  .signup-title {
+    font-size: 2.8rem;
+  }
+  
+  .signup-form-container {
+    padding: 2.5rem;
+  }
+  
+  .footer {
+    padding: 4rem 2rem 2rem;
+  }
+  
+  .footer-main {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* Mobile Screens (481px - 767px) */
+@media (max-width: 767px) and (min-width: 481px) {
+  .container {
+    max-width: 600px;
+    padding: 0 1.5rem;
+  }
+  
+  .hero-banner {
+    height: 50vh;
+    background-attachment: scroll;
+  }
+  
+  .banner-title {
+    font-size: 2.8rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 1.3rem;
+  }
+  
+  .katies-banner {
+    height: 40vh;
+    background-attachment: scroll;
+  }
+  
+  .katies-banner .banner-title {
+    font-size: 2.5rem;
+  }
+  
+  .katies-banner .banner-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  .scroll-down-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .services-section {
+    padding: 4rem 0;
+  }
+  
+  .section-title {
+    font-size: 2.2rem;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .action-btn {
+    width: 100%;
+    max-width: 350px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .signup-section {
+    padding: 4rem 1.5rem;
+  }
+  
+  .signup-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .signup-title {
+    font-size: 2.5rem;
+  }
+  
+  .signup-form-container {
+    padding: 2rem;
+  }
+  
+  .footer {
+    padding: 3rem 1.5rem 2rem;
+  }
+  
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+  
+  .footer-bottom-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .footer-bottom-links {
+    justify-content: center;
+  }
+}
+
+/* Enhanced Responsive Design */
+
+/* Large Tablets and Small Desktops (1024px - 1199px) */
+@media (max-width: 1199px) and (min-width: 1024px) {
+  .banner-title {
+    font-size: 3.5rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 1.3rem;
+  }
+  
+  .hero-image {
+    max-height: 350px;
+  }
+}
+
+/* Tablets (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .hero-banner {
+    height: 55vh;
+    min-height: 450px;
+  }
+  
+  .banner-content {
+    justify-content: center;
+    padding: 0 1.5rem;
+  }
+  
+  .banner-text {
+    text-align: center;
+  }
+  
+  .banner-title {
+    font-size: 3rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 1.2rem;
+  }
+  
+  
+  .signup-content {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .signup-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* Large Mobile (481px - 767px) */
+@media (max-width: 767px) and (min-width: 481px) {
+  .hero-banner {
+    height: 50vh;
+    min-height: 400px;
+    background-attachment: scroll;
+  }
+  
+  .banner-content {
+    justify-content: center;
+    padding: 0 1.5rem;
+  }
+  
+  .banner-text {
+    text-align: center;
+  }
+  
+  .banner-title {
+    font-size: 2.2rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 1rem;
+  }
+  
+  
+  .signup-section {
+    padding: 4rem 1.5rem;
+  }
+  
+  .signup-content {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  
+  .signup-title {
+    font-size: 2.2rem;
+  }
+  
+  .signup-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .signup-form-container {
+    padding: 2rem;
+  }
+}
+
+/* Small Mobile Screens (320px - 480px) */
+@media (max-width: 480px) {
+  .container {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+  
+  .hero-banner {
+    height: 45vh;
+    min-height: 350px;
+    background-attachment: scroll;
+  }
+  
+  .banner-title {
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+  
+  .banner-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .banner-content {
+    justify-content: center;
+    padding: 0 1rem;
+  }
+  
+  .banner-text {
+    text-align: center;
+  }
+  
+  
+  .signup-section {
+    padding: 3rem 1rem;
+  }
+  
+  .signup-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .signup-title {
+    font-size: 2rem;
+  }
+  
+  .signup-subtitle {
+    font-size: 1rem;
+  }
+  
+  .signup-form-container {
+    padding: 1.5rem;
+  }
+  
+  .signup-benefits {
+    gap: 0.75rem;
+  }
+  
+  .benefit-item {
+    font-size: 1rem;
+  }
+  
+  .katies-banner {
+    height: 35vh;
+    background-attachment: scroll;
+  }
+  
+  .katies-banner .banner-title {
+    font-size: 2rem;
+  }
+  
+  .katies-banner .banner-subtitle {
+    font-size: 1rem;
+  }
+  
+  .scroll-down-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .services-section {
+    padding: 3rem 0;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .action-btn {
+    width: 100%;
+    max-width: 280px;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .signup-section {
+    padding: 3rem 1rem;
+  }
+  
+  .signup-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .signup-title {
+    font-size: 2rem;
+  }
+  
+  .signup-form-container {
+    padding: 1.5rem;
+  }
+  
+  .signup-input {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .signup-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .footer {
+    padding: 2.5rem 1rem 1.5rem;
+  }
+  
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  
+  .footer-title {
+    font-size: 1.5rem;
+  }
+  
+  .footer-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .footer-bottom-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .footer-bottom-links {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .footer-bottom-link {
+    font-size: 0.85rem;
+  }
+}
+
+/* Extra Small Screens (320px and below) */
+@media (max-width: 320px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .banner-title {
+    font-size: 1.8rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .katies-banner .banner-title {
+    font-size: 1.8rem;
+  }
+  
+  .katies-banner .banner-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .section-title {
+    font-size: 1.6rem;
+  }
+  
+  .signup-title {
+    font-size: 1.8rem;
+  }
+  
+  .signup-form-container {
+    padding: 1.25rem;
+  }
+  
+  .signup-input {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .signup-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .action-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .footer {
+    padding: 2rem 0.75rem 1rem;
+  }
+  
+  .footer-title {
+    font-size: 1.3rem;
+  }
+  
+  .footer-subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* Extra Small Mobile Screens (320px and below) */
+@media (max-width: 320px) {
+  .hero-banner {
+    height: 40vh;
+    min-height: 300px;
+  }
+  
+  .banner-title {
+    font-size: 1.6rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 0.8rem;
+  }
+  
+  .banner-content {
+    justify-content: center;
+    padding: 0 0.75rem;
+  }
+  
+  .banner-text {
+    text-align: center;
+  }
+  
+  
+  .signup-title {
+    font-size: 1.8rem;
+  }
+  
+  .signup-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .signup-form-container {
+    padding: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .action-btn {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Landscape Mobile Orientation */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero-banner {
+    height: 80vh;
+    min-height: 300px;
+  }
+  
+  .banner-content {
+    flex-direction: row;
+    gap: 2rem;
+  }
+  
+  .banner-text {
+    text-align: left;
+  }
+  
+  .banner-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .banner-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+}
+
+
+/* Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .floating-shape,
+  .particle,
+  .random-particle {
+    animation: none;
+  }
+  
+  .hero-banner {
+    background-attachment: scroll;
+  }
+  
+  .action-btn:hover {
+    transform: none;
+  }
+}
+
+/* Signup Section Styles */
+.signup-section {
+  padding: 6rem 2rem;
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 50%, #fef7ff 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.signup-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(219, 39, 119, 0.4));
+  z-index: 1;
+}
+
+.signup-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.signup-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.signup-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.signup-subtitle {
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.signup-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 500;
+}
+
+.benefit-icon {
+  font-size: 1.5rem;
+  width: 2rem;
+  text-align: center;
+}
+
+.signup-form-container {
+  background: white;
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(236, 72, 153, 0.1);
+  border: 1px solid rgba(236, 72, 153, 0.1);
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.signup-form .form-group {
+  position: relative;
+}
+
+.signup-input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #fafafa;
+}
+
+.signup-input:focus {
+  outline: none;
+  border-color: #ec4899;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+}
+
+.signup-input::placeholder {
+  color: #9ca3af;
+}
+
+.signup-btn {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.signup-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+}
+
+.signup-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loading-spinner-small {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.signup-message {
+  margin-top: 1rem;
+}
+
+.signup-message .success-message {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.signup-message .error-message {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.privacy-note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* Signup Section Styles */

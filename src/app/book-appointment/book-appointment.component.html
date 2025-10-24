@@ -1,0 +1,163 @@
+<section class="container">
+  <h1 class="heading">Book Appointment</h1>
+
+  <div *ngIf="selectedService" class="service-info">
+    <div class="service-header">
+      <h3>{{ selectedService.name }}</h3>
+      <button type="button" class="change-service-btn" (click)="changeService()">
+        Change Service
+      </button>
+    </div>
+    <p>{{ selectedService.description }}</p>
+    <div class="service-details">
+      <span>Duration: {{ selectedService.duration }} minutes</span>
+      <span>Price: €{{ selectedService.price }}</span>
+    </div>
+  </div>
+
+  <div *ngIf="loadingService" class="loading-service">
+    <div class="loading-spinner"></div>
+    <h3>Loading Service...</h3>
+    <p>Please wait while we load your selected service.</p>
+  </div>
+
+  <div *ngIf="!selectedService && !loadingService" class="no-service-selected">
+    <div class="no-service-icon">⚠️</div>
+    <h3>No Service Selected</h3>
+    <p>Please select a service before booking an appointment.</p>
+    <button type="button" class="select-service-btn" (click)="goToServices()">
+      Select Service
+    </button>
+  </div>
+
+  <div class="days-section" *ngIf="selectedService">
+    <div class="days-header">
+      <div class="days-title">Select a day</div>
+      <div class="week-info">Available dates for the next month</div>
+    </div>
+    
+    
+    <div *ngIf="availableDays.length === 0" class="no-days-available">
+      <div class="no-days-icon">🚫</div>
+      <h4>No Available Days</h4>
+      <p>All upcoming days are currently blocked or unavailable. Please check back later or contact us directly.</p>
+      <div class="contact-info">
+        <p><strong>Need to book urgently?</strong></p>
+        <p>Contact us directly to discuss available options.</p>
+      </div>
+    </div>
+    
+    <div *ngIf="availableDays.length > 0" class="days-grid">
+      <button 
+        type="button" 
+        class="day-btn" 
+        *ngFor="let day of displayedDays" 
+        (click)="selectDay(day)" 
+        [class.active]="day === selectedDay"
+        [class.blocked]="isDayBlocked(day)"
+        [disabled]="isDayBlocked(day)"
+        [title]="isDayBlocked(day) ? 'This day is blocked and unavailable' : 'Click to select this day'">
+        {{ day | date:'EEE, MMM d' }}
+        <span *ngIf="isDayBlocked(day)" class="blocked-indicator">🚫</span>
+      </button>
+    </div>
+    
+    <!-- Show More/Less Button -->
+    <div *ngIf="availableDays.length > daysPerPage" class="show-more-container">
+      <button 
+        type="button" 
+        class="show-more-btn" 
+        (click)="toggleShowMore()">
+        {{ showAllDays ? 'Show Less' : `Show More (${availableDays.length - daysPerPage} more)` }}
+      </button>
+    </div>
+    
+    
+    <div *ngIf="blockedDates.length > 0 && availableDays.length > 0" class="blocked-days-info">
+      <span class="info-icon">ℹ️</span>
+      <span class="info-text">{{ getBlockedDaysCount() }} day(s) are currently blocked and unavailable for booking</span>
+    </div>
+    
+    
+  </div>
+
+  <div *ngIf="selectedDay" class="times-section">
+    <div class="times-header">
+      <div class="times-title">Select a time for {{ selectedDay | date:'fullDate' }}</div>
+      <button type="button" class="refresh-times-btn" (click)="refreshAppointments()" title="Refresh available times">
+        🔄 Refresh Times
+      </button>
+    </div>
+    
+    <div *ngIf="availableTimes.length === 0" class="no-times">
+      <p>No available time slots for this day. Please select a different day.</p>
+    </div>
+    
+    <div *ngIf="availableTimes.length > 0" class="times-grid">
+      <button type="button" class="time-btn" *ngFor="let time of availableTimes" (click)="selectTime(time)" [class.active]="time === selectedTime">
+        {{ time | date:'h:mm a' }}
+      </button>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form" *ngIf="selectedService">
+    <div class="row">
+      <label>Name <span class="required">*</span></label>
+      <input type="text" formControlName="name" [class.error]="form.get('name')?.invalid && form.get('name')?.touched" />
+      <div *ngIf="getFieldError('name')" class="field-error">
+        {{ getFieldError('name') }}
+      </div>
+    </div>
+    <div class="row">
+      <label>Email <span class="required">*</span></label>
+      <input type="email" formControlName="email" [class.error]="form.get('email')?.invalid && form.get('email')?.touched" />
+      <div *ngIf="getFieldError('email')" class="field-error">
+        {{ getFieldError('email') }}
+      </div>
+    </div>
+    <div class="row">
+      <label>Phone Number <span class="required">*</span></label>
+      <input type="tel" formControlName="phone" [class.error]="form.get('phone')?.invalid && form.get('phone')?.touched" placeholder="0833866364" />
+      <div *ngIf="getFieldError('phone')" class="field-error">
+        {{ getFieldError('phone') }}
+      </div>
+    </div>
+    <div class="row">
+      <label>Nail Preferences (Optional)</label>
+      <textarea 
+        formControlName="description" 
+        placeholder="Describe your nail preferences, colors, designs, or any special requests..."
+        rows="3"
+        [class.error]="form.get('description')?.invalid && form.get('description')?.touched">
+      </textarea>
+      <div *ngIf="getFieldError('description')" class="field-error">
+        {{ getFieldError('description') }}
+      </div>
+    </div>
+    <div class="row" *ngIf="selectedDay && selectedTime">
+      <label>Selected appointment</label>
+      <div>{{ selectedDay | date:'fullDate' }} at {{ selectedTime | date:'h:mm a' }}</div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="clear-form-btn" (click)="clearForm()">
+        🗑️ Clear Form
+      </button>
+    </div>
+
+    <div class="messages">
+      <div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
+      <div class="success" *ngIf="successMessage">{{ successMessage }}</div>
+    </div>
+
+    <button 
+      class="submit submit-btn" 
+      type="submit" 
+      [disabled]="submitting || !form.valid"
+      [class.loading]="submitting">
+      {{ submitting ? 'Booking...' : 'Book Appointment' }}
+    </button>
+  </form>
+</section>
+
+

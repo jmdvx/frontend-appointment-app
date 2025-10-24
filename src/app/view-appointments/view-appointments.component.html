@@ -1,0 +1,175 @@
+<section class="admin-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Admin Dashboard</h1>
+      <p class="page-subtitle">Manage upcoming appointments</p>
+    </div>
+    <div class="header-actions">
+      <button class="toggle-btn" (click)="toggleShowAllAppointments()" [class.active]="showAllAppointments">
+        {{ showAllAppointments ? '📅 Show Future Only' : '📋 Show All (Including Past)' }}
+      </button>
+      <a class="back-button" routerLink="/">
+        <span class="back-icon">←</span>
+        Back to Home
+      </a>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="stats-section" *ngIf="!loading && !errorMessage">
+    <div class="stat-card">
+      <div class="stat-number">{{ getTotalAppointments() }}</div>
+      <div class="stat-label">Total Appointments</div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading appointments...</p>
+  </div>
+  
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <div class="error-content">
+      <h3>1. Unable to load appointments</h3>
+      <p>{{ errorMessage }}</p>
+      <button class="retry-button" (click)="loadAppointments()">
+        Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !errorMessage && appointments.length === 0" class="empty-state">
+    <div class="empty-content">
+      <div class="empty-icon">📅</div>
+      <h3>1. No upcoming appointments</h3>
+      <p>There are no upcoming appointments scheduled at this time.</p>
+    </div>
+  </div>
+
+  <!-- Appointments List -->
+  <div *ngIf="!loading && !errorMessage && appointments.length > 0" class="appointments-section">
+    <div *ngFor="let appointment of appointments; let i = index" 
+         class="appointment-card" 
+         [class.next-appointment]="i === 0">
+      
+      <!-- Next Appointment Badge -->
+      <div *ngIf="i === 0" class="next-badge">Next Appointment</div>
+      
+      <!-- Card Header -->
+      <div class="card-header">
+        <h3 class="appointment-title">{{ i + 1 }}. {{ appointment.title }}</h3>
+        <div class="appointment-date">{{ formatDate(appointment.date) }}</div>
+      </div>
+      
+      <!-- Service Details -->
+      <div class="service-details">
+        <div class="detail-item">
+          <span class="detail-label">Client Name:</span>
+          <span class="detail-value">{{ getClientName(appointment) }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <span class="detail-label">Booking Day:</span>
+          <span class="detail-value">{{ formatDate(appointment.date) }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <span class="detail-label">Service:</span>
+          <span class="detail-value">{{ getServiceInfo(appointment).name }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <span class="detail-label">Price:</span>
+          <span class="detail-value price">{{ getServiceInfo(appointment).price }}</span>
+        </div>
+        
+        <div class="detail-item">
+          <span class="detail-label">Mobile Number:</span>
+          <span class="detail-value">{{ getClientPhone(appointment) }}</span>
+        </div>
+      </div>
+
+      <!-- Client Notes Section -->
+      <div *ngIf="getClientNotes(appointment)" class="client-notes-section">
+        <h4 class="notes-title">
+          <span class="notes-icon">💅</span>
+          {{ i + 1 }}. Client Notes
+        </h4>
+        <div class="notes-content">
+          {{ getClientNotes(appointment) }}
+        </div>
+      </div>
+
+
+      <!-- Admin Actions -->
+      <div class="admin-actions">
+        <button 
+          class="action-btn reschedule-btn" 
+          (click)="startReschedule(appointment)"
+          [disabled]="isRescheduling(appointment._id || '')">
+          <span *ngIf="!isRescheduling(appointment._id || '')">📅 Reschedule</span>
+          <span *ngIf="isRescheduling(appointment._id || '')">⏳ Rescheduling...</span>
+        </button>
+        
+        <button 
+          class="action-btn cancel-btn" 
+          (click)="cancelAppointment(appointment._id || '')"
+          [disabled]="isCanceling(appointment._id || '')">
+          <span *ngIf="!isCanceling(appointment._id || '')">❌ Cancel</span>
+          <span *ngIf="isCanceling(appointment._id || '')">⏳ Canceling...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reschedule Modal -->
+  <div *ngIf="showRescheduleForm" class="modal-overlay" (click)="cancelReschedule()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Reschedule Appointment</h3>
+        <button class="close-btn" (click)="cancelReschedule()">×</button>
+      </div>
+      
+      <form [formGroup]="rescheduleForm" (ngSubmit)="submitReschedule()" class="reschedule-form">
+        <div class="form-group">
+          <label for="date">New Date:</label>
+          <input 
+            type="date" 
+            id="date" 
+            formControlName="date" 
+            class="form-input"
+            [min]="getCurrentDateString()">
+        </div>
+        
+        <div class="form-group">
+          <label for="time">New Time:</label>
+          <select id="time" formControlName="time" class="form-select">
+            <option value="">Select time</option>
+            <option *ngFor="let slot of getAvailableTimeSlotsForDate(rescheduleForm.get('date')?.value)" [value]="slot">
+              {{ slot }}
+            </option>
+          </select>
+          <div *ngIf="getAvailableTimeSlotsForDate(rescheduleForm.get('date')?.value).length === 0 && rescheduleForm.get('date')?.value" class="no-slots-message">
+            ⚠️ No available time slots for this date
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cancelReschedule()">
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn-primary"
+            [disabled]="!rescheduleForm.valid || isRescheduling(rescheduleAppointmentId || '')">
+            <span *ngIf="!isRescheduling(rescheduleAppointmentId || '')">Reschedule</span>
+            <span *ngIf="isRescheduling(rescheduleAppointmentId || '')">Rescheduling...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
