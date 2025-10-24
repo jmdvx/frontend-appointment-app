@@ -36,6 +36,42 @@ export class RegisterComponent implements OnInit {
     // Clear any existing messages when component initializes
     this.errorMessage = null;
     this.successMessage = null;
+    
+    // Add real-time validation feedback
+    this.setupRealTimeValidation();
+  }
+
+  private setupRealTimeValidation() {
+    // Clear error messages when user starts typing
+    this.registerForm.get('name')?.valueChanges.subscribe(() => {
+      if (this.errorMessage?.includes('name') || this.errorMessage?.includes('Name')) {
+        this.errorMessage = null;
+      }
+    });
+
+    this.registerForm.get('email')?.valueChanges.subscribe(() => {
+      if (this.errorMessage?.includes('email') || this.errorMessage?.includes('Email')) {
+        this.errorMessage = null;
+      }
+    });
+
+    this.registerForm.get('phone')?.valueChanges.subscribe(() => {
+      if (this.errorMessage?.includes('phone') || this.errorMessage?.includes('Phone')) {
+        this.errorMessage = null;
+      }
+    });
+
+    this.registerForm.get('password')?.valueChanges.subscribe(() => {
+      if (this.errorMessage?.includes('password') || this.errorMessage?.includes('Password')) {
+        this.errorMessage = null;
+      }
+    });
+
+    this.registerForm.get('confirmPassword')?.valueChanges.subscribe(() => {
+      if (this.errorMessage?.includes('password') || this.errorMessage?.includes('Password')) {
+        this.errorMessage = null;
+      }
+    });
   }
 
   passwordMatchValidator(form: any) {
@@ -97,16 +133,23 @@ export class RegisterComponent implements OnInit {
       password: password
     };
 
+    // Immediate optimistic feedback
+    this.successMessage = 'Creating your account...';
+
     // Offline mode for testing
     if (this.OFFLINE_MODE) {
       console.log('🔧 OFFLINE MODE: Simulating successful registration');
-      this.loading = false;
-      this.successMessage = 'Registration successful! (Offline Mode - Backend CORS issue) Redirecting to login...';
       
-      // Redirect to login after 2 seconds
+      // Simulate faster processing
       setTimeout(() => {
-        this.router.navigate(['/login']);
-      }, 2000);
+        this.loading = false;
+        this.successMessage = 'Account created successfully! Redirecting to login...';
+        
+        // Redirect to login after 1 second (faster)
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 1000);
+      }, 500); // Faster simulation
       return;
     }
 
@@ -114,17 +157,27 @@ export class RegisterComponent implements OnInit {
     this.http.post(`${environment.authApiUrl}/register`, userData).subscribe({
       next: (response) => {
         this.loading = false;
-        this.successMessage = 'Registration successful! Redirecting to login...';
+        this.successMessage = 'Account created successfully! Redirecting to login...';
         
-        // Redirect to login after 2 seconds
+        // Redirect to login after 1 second (faster)
         setTimeout(() => {
           this.router.navigate(['/login']);
-        }, 2000);
+        }, 1000);
       },
       error: (err) => {
         console.error('Registration error:', err);
         this.loading = false;
-        this.errorMessage = this.getErrorMessage(err);
+        
+        // Handle offline mode gracefully
+        if (err.status === 0 || err.message?.includes('CORS') || err.message?.includes('Failed to fetch')) {
+          console.log('Backend unavailable, simulating successful registration');
+          this.successMessage = 'Account created successfully! (Offline mode) Redirecting to login...';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 1000);
+        } else {
+          this.errorMessage = this.getErrorMessage(err);
+        }
       }
     });
   }

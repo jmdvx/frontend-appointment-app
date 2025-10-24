@@ -109,6 +109,17 @@ input.error:focus {
   font-weight: 500;
 }
 
+.success-message {
+  color: #059669;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+input.success {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
 .messages {
   min-height: 1.5rem;
   display: flex;
@@ -178,6 +189,32 @@ input.error:focus {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.btn-spinner {
+  font-size: 1.2rem;
+  animation: spin 1s linear infinite;
+}
+
+.btn-content.loading .btn-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .footer {
