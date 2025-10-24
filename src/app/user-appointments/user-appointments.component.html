@@ -68,20 +68,22 @@
          (mouseenter)="onCardHover(appointment._id!)"
          (mouseleave)="onCardLeave()">
       
-      <!-- Next Appointment Badge -->
-      <div *ngIf="i === 0" class="next-badge">Next Appointment</div>
+      <!-- Card Header with Next Appointment Badge -->
+      <div class="card-header">
+        <div class="header-left">
+          <h3 class="appointment-title">{{ appointment.title }}</h3>
+          <div class="appointment-date">{{ formatDate(appointment.date) }}</div>
+          <div class="relative-time">{{ getRelativeTime(appointment.date) }} away</div>
+        </div>
+        
+        <!-- Next Appointment Badge - Top Right -->
+        <div *ngIf="i === 0" class="next-badge">Next Appointment</div>
+      </div>
       
       <!-- Urgency Badge -->
       <div *ngIf="getUrgencyLevel(appointment) === 'high'" class="urgency-badge high">
         <span class="urgency-icon">⚡</span>
         Soon!
-      </div>
-      
-      <!-- Card Header -->
-      <div class="card-header">
-        <h3 class="appointment-title">{{ appointment.title }}</h3>
-        <div class="appointment-date">{{ formatDate(appointment.date) }}</div>
-        <div class="relative-time">{{ getRelativeTime(appointment.date) }} away</div>
       </div>
       
       <!-- Service Details -->

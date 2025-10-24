@@ -288,9 +288,7 @@
 }
 
 .next-badge {
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
+  position: relative;
   background: linear-gradient(135deg, #ec4899, #db2777);
   color: white;
   padding: 0.5rem 1rem;
@@ -302,6 +300,7 @@
   box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
   animation: pulse 2s infinite;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 @keyframes pulse {
@@ -311,8 +310,15 @@
 
 /* Card Header */
 .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   padding: 2rem 2rem 1.5rem 2rem;
   border-bottom: 1px solid #f1f5f9;
+}
+
+.header-left {
+  flex: 1;
 }
 
 .appointment-title {
