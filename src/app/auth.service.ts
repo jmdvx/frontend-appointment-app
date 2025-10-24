@@ -92,11 +92,25 @@ export class AuthService {
     if (this.OFFLINE_MODE) {
       console.log('🔧 OFFLINE MODE: Simulating successful login');
       
-      // Simulate a successful login with test data
+      // Determine user name based on email
+      let userName = 'User';
+      if (credentials.email.toLowerCase().includes('james')) {
+        userName = 'James';
+      } else if (credentials.email.toLowerCase().includes('katie')) {
+        userName = 'Katie';
+      } else if (credentials.email.toLowerCase().includes('admin')) {
+        userName = 'Admin';
+      } else {
+        // Extract name from email (part before @)
+        const emailPart = credentials.email.split('@')[0];
+        userName = emailPart.charAt(0).toUpperCase() + emailPart.slice(1);
+      }
+      
+      // Simulate a successful login with realistic data
       const mockUser: User = {
-        id: 'test-user-123',
+        id: 'user-' + Date.now(),
         email: credentials.email,
-        name: 'Test User',
+        name: userName,
         phone: '0833866364',
         role: credentials.email.toLowerCase().includes('admin') ? 'admin' : 'user'
       };
