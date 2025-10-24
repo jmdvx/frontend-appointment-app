@@ -383,6 +383,7 @@ export class CalendarViewComponent implements OnInit {
     });
   }
 
+  // Cancel appointment - NO CONFIRMATION DIALOGS
   cancelAppointment(appointmentId: string): void {
     this.cancelingAppointmentId = appointmentId;
     

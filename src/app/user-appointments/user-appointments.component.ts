@@ -159,7 +159,7 @@ export class UserAppointmentsComponent implements OnInit {
     return this.appointments.length;
   }
 
-  // Cancel appointment with enhanced UX
+  // Cancel appointment with enhanced UX - NO CONFIRMATION DIALOGS
   cancelAppointment(appointment: AppointmentDto): void {
     if (this.isAnimating) return;
     
