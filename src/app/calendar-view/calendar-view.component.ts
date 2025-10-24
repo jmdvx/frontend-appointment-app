@@ -357,10 +357,13 @@ export class CalendarViewComponent implements OnInit {
     this.appointmentService.deleteAppointment(appointmentId).subscribe({
       next: (response) => {
         console.log('Appointment deleted:', response);
-        this.loadAppointments(); // Reload appointments
+        // Remove appointment immediately from UI
+        this.appointments = this.appointments.filter(apt => apt._id !== appointmentId);
         this.deletingAppointmentId = null;
         this.successMessage = 'Appointment deleted successfully!';
         setTimeout(() => this.successMessage = null, 3000);
+        // Try to reload appointments (but don't wait for it)
+        this.loadAppointments();
       },
       error: (err) => {
         console.error('Error deleting appointment:', err);
@@ -387,10 +390,13 @@ export class CalendarViewComponent implements OnInit {
     this.appointmentService.deleteAppointment(appointmentId).subscribe({
       next: (response) => {
         console.log('Appointment canceled:', response);
-        this.loadAppointments(); // Reload appointments
+        // Remove appointment immediately from UI
+        this.appointments = this.appointments.filter(apt => apt._id !== appointmentId);
         this.cancelingAppointmentId = null;
         this.successMessage = 'Appointment canceled successfully!';
         setTimeout(() => this.successMessage = null, 3000);
+        // Try to reload appointments (but don't wait for it)
+        this.loadAppointments();
       },
       error: (err) => {
         console.error('Error canceling appointment:', err);

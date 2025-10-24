@@ -216,8 +216,11 @@ export class ViewAppointmentsComponent implements OnInit {
     this.appointmentService.deleteAppointment(appointmentId).subscribe({
       next: (response) => {
         console.log('Appointment canceled:', response);
-        this.loadAppointments(); // Reload the list
+        // Remove appointment immediately from UI
+        this.appointments = this.appointments.filter(apt => apt._id !== appointmentId);
         this.cancelingAppointmentId = null;
+        // Try to reload appointments (but don't wait for it)
+        this.loadAppointments();
       },
       error: (err) => {
         console.error('Error canceling appointment:', err);
