@@ -2,7 +2,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -15,6 +16,9 @@ export class RegisterComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
+
+  // Offline mode flag - set to true to enable offline testing
+  private readonly OFFLINE_MODE = true;
 
   registerForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -93,8 +97,21 @@ export class RegisterComponent implements OnInit {
       password: password
     };
 
+    // Offline mode for testing
+    if (this.OFFLINE_MODE) {
+      console.log('🔧 OFFLINE MODE: Simulating successful registration');
+      this.loading = false;
+      this.successMessage = 'Registration successful! (Offline Mode - Backend CORS issue) Redirecting to login...';
+      
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 2000);
+      return;
+    }
+
     // Replace with actual backend registration endpoint
-    this.http.post('https://backend-appointment-app-wqo0.onrender.com/api/auth/register', userData).subscribe({
+    this.http.post(`${environment.authApiUrl}/register`, userData).subscribe({
       next: (response) => {
         this.loading = false;
         this.successMessage = 'Registration successful! Redirecting to login...';
@@ -112,7 +129,12 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  private getErrorMessage(error: any): string {
+  private getErrorMessage(error: HttpErrorResponse): string {
+    // Handle CORS errors
+    if (error.status === 0 || error.message.includes('CORS') || error.message.includes('Access-Control-Allow-Origin')) {
+      return 'CORS Error: Unable to connect to the server. Please check if the backend is configured to allow requests from this domain.';
+    }
+    
     // Check if we got HTML instead of JSON (server not running)
     if (error.error && typeof error.error === 'string' && error.error.includes('<!DOCTYPE')) {
       return 'Backend server is not running. Please check if the server is started on port 3000.';

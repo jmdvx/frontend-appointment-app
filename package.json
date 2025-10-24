@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build --configuration production",
+    "build:github": "ng build --configuration production --base-href /frontend-appointment-app/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:appointment-app": "node dist/appointment-app/server/server.mjs"

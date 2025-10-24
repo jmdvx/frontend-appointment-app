@@ -203,10 +203,6 @@ export class ServicesComponent implements OnInit {
       return;
     }
 
-    if (!confirm('Are you sure you want to reset all services to default? This will remove all custom services.')) {
-      return;
-    }
-
     // Reset to default services
     this.services = [
       {
@@ -363,10 +359,6 @@ export class ServicesComponent implements OnInit {
 
   // Enhanced delete service method with persistence
   deleteService(service: NailService): void {
-    if (!confirm(`Are you sure you want to delete "${service.name}"? This action cannot be undone.`)) {
-      return;
-    }
-
     this.services = this.services.filter(s => s.id !== service.id);
     this.saveServices(); // Persist changes
     alert(`Service "${service.name}" has been deleted.`);

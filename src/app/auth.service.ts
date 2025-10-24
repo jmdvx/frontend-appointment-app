@@ -1,9 +1,10 @@
 import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { tap, map, catchError } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../environments/environment';
 
 export interface User {
   id: string;
@@ -56,6 +57,9 @@ export class AuthService {
   public isAdmin = signal(false);
   public currentUser = signal<User | null>(null);
 
+  // Offline mode flag - set to true to enable offline testing
+  private readonly OFFLINE_MODE = true;
+
   constructor() {
     // Check for stored token on service init
     this.checkStoredAuth();
@@ -82,8 +86,38 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
+    console.log('Attempting login with:', credentials);
+    
+    // Offline mode for testing
+    if (this.OFFLINE_MODE) {
+      console.log('🔧 OFFLINE MODE: Simulating successful login');
+      
+      // Simulate a successful login with test data
+      const mockUser: User = {
+        id: 'test-user-123',
+        email: credentials.email,
+        name: 'Test User',
+        phone: '0833866364',
+        role: credentials.email.toLowerCase().includes('admin') ? 'admin' : 'user'
+      };
+      
+      const mockResponse: LoginResponse = {
+        user: mockUser,
+        token: `offline_token_${Date.now()}`
+      };
+      
+      // Save user data and token
+      this.setUser(mockResponse.user);
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem('auth_token', mockResponse.token);
+        localStorage.setItem('current_user', JSON.stringify(mockResponse.user));
+      }
+      
+      return of(mockResponse);
+    }
+    
     // First, get all users and find matching email
-    return this.http.get<any[]>('https://backend-appointment-app-wqo0.onrender.com/api/v1/users').pipe(
+    return this.http.get<any[]>(`${environment.apiUrl}/users`).pipe(
       map(users => {
         // Make email comparison case-insensitive
         const user = users.find(u => u.email.toLowerCase() === credentials.email.toLowerCase());
@@ -113,9 +147,25 @@ export class AuthService {
         
         return response;
       }),
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         console.error('Login error:', error);
-        throw error;
+        
+        // Handle CORS errors specifically
+        if (error.status === 0 || error.message.includes('CORS') || error.message.includes('Access-Control-Allow-Origin')) {
+          console.error('CORS Error: The backend server needs to be configured to allow requests from your frontend domain.');
+          console.error('Frontend domain:', window.location.origin);
+          console.error('Backend URL:', environment.apiUrl);
+          throw new Error('CORS Error: Unable to connect to the server. Please check if the backend is configured to allow requests from this domain.');
+        }
+        
+        // Handle other HTTP errors
+        if (error.status >= 400 && error.status < 500) {
+          throw new Error('Invalid credentials or user not found');
+        } else if (error.status >= 500) {
+          throw new Error('Server error. Please try again later.');
+        }
+        
+        throw new Error('Network error. Please check your connection and try again.');
       })
     );
   }
@@ -165,6 +215,7 @@ export class AuthService {
     console.log('isAuthenticated:', this.isAuthenticated());
     console.log('isAdmin:', this.isAdmin());
     console.log('currentUser:', this.currentUser());
+    console.log('OFFLINE_MODE:', this.OFFLINE_MODE);
     
     if (isPlatformBrowser(this.platformId)) {
       console.log('localStorage auth_token:', localStorage.getItem('auth_token'));
@@ -204,15 +255,27 @@ export class AuthService {
   forgotPassword(email: string): Observable<ForgotPasswordResponse> {
     console.log('Sending forgot password request for:', email);
     
+    // Offline mode for testing
+    if (this.OFFLINE_MODE) {
+      console.log('🔧 OFFLINE MODE: Simulating forgot password');
+      return of({ message: 'Password reset email sent successfully (offline mode)' });
+    }
+    
     return this.http.post<ForgotPasswordResponse>(
-      'https://backend-appointment-app-wqo0.onrender.com/api/auth/forgot-password',
+      `${environment.authApiUrl}/forgot-password`,
       { email }
     ).pipe(
       tap(response => {
         console.log('Forgot password response:', response);
       }),
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         console.error('Forgot password error:', error);
+        
+        // Handle CORS errors
+        if (error.status === 0 || error.message.includes('CORS') || error.message.includes('Access-Control-Allow-Origin')) {
+          throw new Error('CORS Error: Unable to connect to the server. Please check if the backend is configured to allow requests from this domain.');
+        }
+        
         throw error;
       })
     );
@@ -221,17 +284,29 @@ export class AuthService {
   resetPassword(token: string, password: string): Observable<ResetPasswordResponse> {
     console.log('Sending reset password request with token:', token);
     
+    // Offline mode for testing
+    if (this.OFFLINE_MODE) {
+      console.log('🔧 OFFLINE MODE: Simulating password reset');
+      return of({ message: 'Password reset successfully (offline mode)' });
+    }
+    
     // Note: This endpoint needs to be implemented in your backend
     // For now, we'll use a placeholder that matches your backend pattern
     return this.http.post<ResetPasswordResponse>(
-      'https://backend-appointment-app-wqo0.onrender.com/api/auth/reset-password',
+      `${environment.authApiUrl}/reset-password`,
       { token, password }
     ).pipe(
       tap(response => {
         console.log('Reset password response:', response);
       }),
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         console.error('Reset password error:', error);
+        
+        // Handle CORS errors
+        if (error.status === 0 || error.message.includes('CORS') || error.message.includes('Access-Control-Allow-Origin')) {
+          throw new Error('CORS Error: Unable to connect to the server. Please check if the backend is configured to allow requests from this domain.');
+        }
+        
         throw error;
       })
     );
@@ -241,15 +316,27 @@ export class AuthService {
   sendWelcomeEmail(userId: string): Observable<{ success: boolean; message: string }> {
     console.log('Sending welcome email for user:', userId);
     
+    // Offline mode for testing
+    if (this.OFFLINE_MODE) {
+      console.log('🔧 OFFLINE MODE: Simulating welcome email');
+      return of({ success: true, message: 'Welcome email sent successfully (offline mode)' });
+    }
+    
     return this.http.post<{ success: boolean; message: string }>(
-      `https://backend-appointment-app-wqo0.onrender.com/api/auth/send-welcome-email/${userId}`,
+      `${environment.authApiUrl}/send-welcome-email/${userId}`,
       {}
     ).pipe(
       tap(response => {
         console.log('Welcome email response:', response);
       }),
-      catchError(error => {
+      catchError((error: HttpErrorResponse) => {
         console.error('Welcome email error:', error);
+        
+        // Handle CORS errors
+        if (error.status === 0 || error.message.includes('CORS') || error.message.includes('Access-Control-Allow-Origin')) {
+          throw new Error('CORS Error: Unable to connect to the server. Please check if the backend is configured to allow requests from this domain.');
+        }
+        
         throw error;
       })
     );

@@ -352,10 +352,6 @@ export class CalendarViewComponent implements OnInit {
 
   // Appointment action methods
   deleteAppointment(appointmentId: string): void {
-    if (!confirm('Are you sure you want to permanently delete this appointment?')) {
-      return;
-    }
-
     this.deletingAppointmentId = appointmentId;
     
     this.appointmentService.deleteAppointment(appointmentId).subscribe({
@@ -375,10 +371,6 @@ export class CalendarViewComponent implements OnInit {
   }
 
   cancelAppointment(appointmentId: string): void {
-    if (!confirm('Are you sure you want to cancel this appointment?')) {
-      return;
-    }
-
     this.cancelingAppointmentId = appointmentId;
     
     // For now, we'll use delete as cancel (you can implement a separate cancel status later)

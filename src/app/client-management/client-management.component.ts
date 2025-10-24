@@ -329,10 +329,6 @@ export class ClientManagementComponent implements OnInit {
 
   // Delete client
   deleteClient(client: Client): void {
-    if (!confirm(`Are you sure you want to delete ${client.name}? This action cannot be undone.`)) {
-      return;
-    }
-
     this.clientService.deleteClient(client._id!).subscribe({
       next: (response) => {
         console.log('Client deleted:', response);
@@ -350,10 +346,6 @@ export class ClientManagementComponent implements OnInit {
     const action = client.isBanned ? 'unban' : 'ban';
     const actionText = client.isBanned ? 'unban' : 'ban';
     
-    if (!confirm(`Are you sure you want to ${actionText} ${client.name}?`)) {
-      return;
-    }
-
     // For now, we'll toggle the ban status locally
     // In a real implementation, you'd call a backend API
     client.isBanned = !client.isBanned;

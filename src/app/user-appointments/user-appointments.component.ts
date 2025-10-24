@@ -165,13 +165,7 @@ export class UserAppointmentsComponent implements OnInit {
     
     this.isAnimating = true;
     const isWithin24Hours = this.isWithin24Hours(appointment);
-    const feeMessage = isWithin24Hours ? '\n\n⚠️ This appointment is within 24 hours. A cancellation fee may apply.' : '';
     
-    if (!confirm(`Are you sure you want to cancel your appointment for ${this.getServiceInfo(appointment).name} on ${this.formatDate(appointment.date)}?${feeMessage}`)) {
-      this.isAnimating = false;
-      return;
-    }
-
     console.log('Cancelling appointment:', appointment._id);
     
     this.appointmentService.deleteAppointment(appointment._id!).subscribe({

@@ -211,10 +211,6 @@ export class ViewAppointmentsComponent implements OnInit {
 
   // Cancel appointment
   cancelAppointment(appointmentId: string): void {
-    if (!confirm('Are you sure you want to cancel this appointment?')) {
-      return;
-    }
-
     this.cancelingAppointmentId = appointmentId;
     
     this.appointmentService.deleteAppointment(appointmentId).subscribe({

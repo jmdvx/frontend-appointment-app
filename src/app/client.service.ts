@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../environments/environment';
 
 export interface Client {
   _id?: string;
@@ -33,13 +34,18 @@ export interface ClientAppointmentHistory {
 @Injectable({ providedIn: 'root' })
 export class ClientService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://backend-appointment-app-wqo0.onrender.com/api/v1/clients';
+  private readonly baseUrl = `${environment.apiUrl}/clients`;
 
   // Get all clients
   getClients(): Observable<Client[]> {
     return this.http.get<Client[]>(this.baseUrl).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Client service error:', error);
+        
+        // Handle CORS errors
+        if (error.status === 0 || error.message.includes('CORS') || error.message.includes('Access-Control-Allow-Origin')) {
+          return throwError(() => new Error('CORS Error: Unable to connect to the server. Please check if the backend is configured to allow requests from this domain.'));
+        }
         
         // Check if the response is HTML (indicates server error or wrong endpoint)
         if (error.error && typeof error.error === 'string' && error.error.includes('<!DOCTYPE')) {
@@ -48,10 +54,6 @@ export class ClientService {
         }
         
         // Handle other HTTP errors
-        if (error.status === 0) {
-          return throwError(() => new Error('Unable to connect to the server. Please check your connection and ensure the backend is running.'));
-        }
-        
         if (error.status === 404) {
           return throwError(() => new Error('Client API endpoint not found. Please check the backend configuration.'));
         }
