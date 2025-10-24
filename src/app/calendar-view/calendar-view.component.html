@@ -1,24 +1,27 @@
 <section class="calendar-container">
   <!-- Calendar Navigation -->
   <div class="calendar-nav">
-    <button class="nav-btn" (click)="previousMonth()">
-      <span class="nav-icon">‹</span>
-    </button>
-    <h2 class="month-year">{{ getMonthYearDisplay() }}</h2>
-    <button class="nav-btn" (click)="nextMonth()">
-      <span class="nav-icon">›</span>
-    </button>
+    <div class="nav-main">
+      <button class="nav-btn" (click)="previousMonth()">
+        <span class="nav-icon">‹</span>
+      </button>
+      <h2 class="month-year">{{ getMonthYearDisplay() }}</h2>
+      <button class="nav-btn" (click)="nextMonth()">
+        <span class="nav-icon">›</span>
+      </button>
+    </div>
     <div class="nav-actions">
       <button class="book-walkin-btn" (click)="openWalkInBooking()">
         <span class="btn-icon">👤</span>
-        Book Walk-in Client
+        <span class="btn-text">Book Walk-in</span>
       </button>
       <button class="refresh-btn" (click)="forceRefreshCalendar()" title="Refresh calendar data">
         <span class="btn-icon">🔄</span>
-        Refresh
+        <span class="btn-text">Refresh</span>
       </button>
       <button class="today-btn" (click)="goToToday()">
-        📅 Today
+        <span class="btn-icon">📅</span>
+        <span class="btn-text">Today</span>
       </button>
     </div>
   </div>
