@@ -1486,74 +1486,19 @@
   transform: none;
 }
 
-/* Mobile responsive for walk-in modal */
+/* Mobile responsive for modals */
 @media (max-width: 768px) {
-  .modal-overlay {
-    padding: 0.5rem;
-  }
-  
-  .walkin-modal {
-    width: 95%;
-    max-height: 95vh;
-    margin: 0;
-  }
-  
-  .reschedule-modal {
-    width: 95%;
-    max-height: 90vh;
-    margin: 0;
-  }
-  
-  .reschedule-form {
-    padding: 1.5rem;
-  }
-  
-  .reschedule-form .form-actions {
-    flex-direction: column;
-  }
-  
-  .reschedule-form .btn-secondary,
-  .reschedule-form .btn-primary {
-    width: 100%;
-  }
-  
-  .modal-header {
-    padding: 1rem 1.5rem;
-  }
-  
-  .modal-header h3 {
-    font-size: 1.25rem;
-  }
-  
-  .form-section {
-    padding: 1rem 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .form-section h4 {
-    font-size: 1.125rem;
-    margin-bottom: 1rem;
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  .form-input,
-  .form-select,
-  .form-textarea {
-    padding: 0.875rem;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-    padding: 1.5rem;
-    gap: 0.75rem;
-  }
-  
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    padding: 0.875rem 1.5rem;
-  }
+  .modal-overlay { padding: 0.5rem; }
+  .walkin-modal, .reschedule-modal { width: 95%; max-height: 90vh; margin: 0; }
+  .reschedule-form { padding: 1.5rem; }
+  .reschedule-form .form-actions { flex-direction: column; }
+  .reschedule-form .btn-secondary, .reschedule-form .btn-primary { width: 100%; }
+  .modal-header { padding: 1rem 1.5rem; }
+  .modal-header h3 { font-size: 1.25rem; }
+  .form-section { padding: 1rem 1.5rem; margin-bottom: 1.5rem; }
+  .form-section h4 { font-size: 1.125rem; margin-bottom: 1rem; }
+  .form-group { margin-bottom: 1rem; }
+  .form-input, .form-select, .form-textarea { padding: 0.875rem; }
+  .form-actions { flex-direction: column; padding: 1.5rem; gap: 0.75rem; }
+  .btn-primary, .btn-secondary { width: 100%; padding: 0.875rem 1.5rem; }
 }
