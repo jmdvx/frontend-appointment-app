@@ -94,7 +94,7 @@ export class RegisterComponent implements OnInit {
     };
 
     // Replace with actual backend registration endpoint
-    this.http.post('http://localhost:3000/api/auth/register', userData).subscribe({
+    this.http.post('https://backend-appointment-app-wqo0.onrender.com/api/auth/register', userData).subscribe({
       next: (response) => {
         this.loading = false;
         this.successMessage = 'Registration successful! Redirecting to login...';

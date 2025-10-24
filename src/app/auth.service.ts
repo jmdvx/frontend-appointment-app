@@ -83,7 +83,7 @@ export class AuthService {
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     // First, get all users and find matching email
-    return this.http.get<any[]>('http://localhost:3000/api/v1/users').pipe(
+    return this.http.get<any[]>('https://backend-appointment-app-wqo0.onrender.com/api/v1/users').pipe(
       map(users => {
         // Make email comparison case-insensitive
         const user = users.find(u => u.email.toLowerCase() === credentials.email.toLowerCase());
@@ -205,7 +205,7 @@ export class AuthService {
     console.log('Sending forgot password request for:', email);
     
     return this.http.post<ForgotPasswordResponse>(
-      'http://localhost:3000/api/auth/forgot-password',
+      'https://backend-appointment-app-wqo0.onrender.com/api/auth/forgot-password',
       { email }
     ).pipe(
       tap(response => {
@@ -224,7 +224,7 @@ export class AuthService {
     // Note: This endpoint needs to be implemented in your backend
     // For now, we'll use a placeholder that matches your backend pattern
     return this.http.post<ResetPasswordResponse>(
-      'http://localhost:3000/api/auth/reset-password',
+      'https://backend-appointment-app-wqo0.onrender.com/api/auth/reset-password',
       { token, password }
     ).pipe(
       tap(response => {
@@ -242,7 +242,7 @@ export class AuthService {
     console.log('Sending welcome email for user:', userId);
     
     return this.http.post<{ success: boolean; message: string }>(
-      `http://localhost:3000/api/auth/send-welcome-email/${userId}`,
+      `https://backend-appointment-app-wqo0.onrender.com/api/auth/send-welcome-email/${userId}`,
       {}
     ).pipe(
       tap(response => {

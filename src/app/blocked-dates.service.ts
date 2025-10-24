@@ -21,7 +21,7 @@ export interface BlockedDateResponse {
 @Injectable({ providedIn: 'root' })
 export class BlockedDatesService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/v1/blocked-dates';
+  private readonly baseUrl = 'https://backend-appointment-app-wqo0.onrender.com/api/v1/blocked-dates';
 
   // Get all blocked dates
   getBlockedDates(): Observable<BlockedDateDto[]> {

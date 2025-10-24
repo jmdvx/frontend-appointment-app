@@ -22,7 +22,7 @@ export interface AppointmentDto {
 @Injectable({ providedIn: 'root' })
 export class AppointmentService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api/v1/appointments';
+  private readonly baseUrl = 'https://backend-appointment-app-wqo0.onrender.com/api/v1/appointments';
 
   getAppointments(): Observable<AppointmentDto[]> {
     return this.http.get<AppointmentDto[]>(this.baseUrl);

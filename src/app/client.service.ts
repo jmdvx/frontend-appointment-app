@@ -33,7 +33,7 @@ export interface ClientAppointmentHistory {
 @Injectable({ providedIn: 'root' })
 export class ClientService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/v1/clients';
+  private readonly baseUrl = 'https://backend-appointment-app-wqo0.onrender.com/api/v1/clients';
 
   // Get all clients
   getClients(): Observable<Client[]> {
